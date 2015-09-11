@@ -23,9 +23,9 @@ For CD-HIT: `alignmentstats.py`
 # Installation
 
 1. Check out PconsC3 from GitHub
-
+```
     git checkout https://github.com/mskwark/PconsC3.git
-
+````
 2. Install Julia packages. Start Julia and install:
 
 * [NLopt.jl](https://github.com/JuliaOpt/NLopt.jl).
