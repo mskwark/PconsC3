@@ -60,33 +60,28 @@ To run PconsC3, you need to have at hand:
 You can name these files any way you want, but assuming your alignment is named `myprotein.fas`, your contact priors are named `external.RR`, secondary structure prediction file is named `psipred.ss2` and RSA is named `netsurf.rsa`, to run the prediction do the following. 
 
  1. Infer evolutionary couplings with GaussDCA:
-```
-./rungdca.py myprotein.fas
-```
-
-It will produce a file named `myprotein.gdca`
+    ```
+    ./rungdca.py myprotein.fas
+    ```
+    It will produce a file named `myprotein.gdca`
 
  2. Infer evolutionary couplings with plmDCA.jl:
-```
-./runplm.py myprotein.fas
-```
-
-It will produce a file named `myprotein.0.02.plm20`
+    ```
+    ./runplm.py myprotein.fas
+    ```
+    It will produce a file named `myprotein.0.02.plm20`
 
  3. Compute alignment statistics:
-```
-./alignmentstats.py myprotein.fas
-```
-
-It will produce a file named `myprotein.stats`
+    ```
+    ./alignmentstats.py myprotein.fas
+    ```
+    It will produce a file named `myprotein.stats`
 
  4. Run PconsC3:
-
-```
-./predict.py myprotein.gdca myprotein.0.02.plm20 external.RR netsurf.rsa psipred.ss2 myprotein.stats myprotein.fas outputfile
-```
-
-This will run for a while, but will provide you with estimates of running time. It will result in a number of intermediate files being generated: `outputfile.l0, outputfile.l1...outputfile.l5` and an `outputfile.RR` containing final predictions in RR format (by default only non-local prediction are output).
+    ```
+    ./predict.py myprotein.gdca myprotein.0.02.plm20 external.RR netsurf.rsa psipred.ss2 myprotein.stats myprotein.fas outputfile
+    ```
+    This will run for a while, but will provide you with estimates of running time. It will result in a number of intermediate files being generated: `outputfile.l0, outputfile.l1...outputfile.l5` and an `outputfile.RR` containing final predictions in RR format (by default only non-local prediction are output).
 
 # Making PconsC3 run faster
 
