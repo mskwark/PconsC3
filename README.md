@@ -23,24 +23,22 @@ For CD-HIT: `alignmentstats.py`
 # Installation
 
 1. Check out PconsC3 from GitHub
-```
+    ```
     git checkout https://github.com/mskwark/PconsC3.git
-````
+    ````
 2. Install Julia packages. Start Julia and install:
-
-* [NLopt.jl](https://github.com/JuliaOpt/NLopt.jl).
-```
-julia> Pkg.add("NLopt")
-```
-* [GaussDCA](https://github.com/carlobaldassi/GaussDCA.jl)
-```
-julia> Pkg.clone("https://github.com/carlobaldassi/GaussDCA.jl")
-```
-* [PlmDCA]("http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003847"). Install a (very slightly) modified version of [PlmDCA.jl](https://github.com/pagnani/PlmDCA)
-```
-julia> Pkg.clone("https://github.com/mskwark/PlmDCA")
-```
-
+    * [NLopt.jl](https://github.com/JuliaOpt/NLopt.jl).
+    ```
+    julia> Pkg.add("NLopt")
+    ```
+    * [GaussDCA](https://github.com/carlobaldassi/GaussDCA.jl)
+    ```
+    julia> Pkg.clone("https://github.com/carlobaldassi/GaussDCA.jl")
+    ```
+    * [PlmDCA](http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003847). Install a (very slightly) modified version of [PlmDCA.jl](https://github.com/pagnani/PlmDCA)
+    ```
+    julia> Pkg.clone("https://github.com/mskwark/PlmDCA")
+    ```
 3. Make sure the prerequisites are installed.
 
 # Running the software
