@@ -36,7 +36,7 @@ julia> Pkg.add("NLopt")
 ```
 julia> Pkg.clone("https://github.com/carlobaldassi/GaussDCA.jl")
 ```
-* [PlmDCA] Install a (very slightly) modified version of [PlmDCA.jl](https://github.com/pagnani/PlmDCA)
+* [PlmDCA]("http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003847"). Install a (very slightly) modified version of [PlmDCA.jl](https://github.com/pagnani/PlmDCA)
 ```
 julia> Pkg.clone("https://github.com/mskwark/PlmDCA")
 ```
@@ -45,7 +45,7 @@ julia> Pkg.clone("https://github.com/mskwark/PlmDCA")
 
 # Running the software
 
-Before the first run, download and unpack the trained Random Forests in the same directory as the PconsC3 code. You should have six subdirectories named `tforest0, tforest1,...tforest5`. You can get them from (Google Drive)[https://drive.google.com/folderview?id=0BxpeugdrylmAaGtmdlVaWXpIUkU&usp=sharing].
+Before the first run, download and unpack the trained Random Forests in the same directory as the PconsC3 code. You should have six subdirectories named `tforest0, tforest1,...tforest5`. You can get them from [Google Drive](https://drive.google.com/folderview?id=0BxpeugdrylmAaGtmdlVaWXpIUkU&usp=sharing).
 
 ```
 > tar -xJf pconsc3-forests.tar.xz
@@ -55,9 +55,9 @@ You may want to put them on a fast filesystem (on a relatively recent Linux mach
 
 To run PconsC3, you need to have at hand:
  * Your input alignment in FASTA format, retaining only these columns that you want to run the prediction for (most often: all the match states/amino acids in your target sequence). For A3M alignments this can be attained by filtering all the lowercase letters (inserts) from the sequences.
- * Predicted secondary structure in a PSIPRED ss2 format. Download or run (PSIPRED here)[http://bioinf.cs.ucl.ac.uk/psipred/]
- * Predicted relative solvent accessibility (RSA) in NetSurfP format. Download or run (NetSurfP here)[http://www.cbs.dtu.dk/services/NetSurfP/]
- * A source of external estimates of contact propensities in a (CASP RR format)[http://predictioncenter.org/casp8/index.cgi?page=format#RR] to act as a contact prior. We have tested the method with CMAPpro and PhyCMAP, but other methods should work as well.
+ * Predicted secondary structure in a PSIPRED ss2 format. Download or run [PSIPRED here](http://bioinf.cs.ucl.ac.uk/psipred/)
+ * Predicted relative solvent accessibility (RSA) in NetSurfP format. Download or run [NetSurfP here](http://www.cbs.dtu.dk/services/NetSurfP/)
+ * A source of external estimates of contact propensities in a [CASP RR format](http://predictioncenter.org/casp8/index.cgi?page=format#RR) to act as a contact prior. We have tested the method with CMAPpro and PhyCMAP, but other methods should work as well.
 
 You can name these files any way you want, but assuming your alignment is named `myprotein.fas`, your contact priors are named `external.RR`, secondary structure prediction file is named `psipred.ss2` and RSA is named `netsurf.rsa`, to run the prediction do the following. 
 
