@@ -17,8 +17,8 @@ If you use PconsC3 please cite:
 
 If Julia, Python and CD-HIT are in your search path, you are set to go. Otherwise, you need to either add them to the path, or modify the necessary scripts.
 
-For Julia: rungdca.py and runplm.py
-For CD-HIT: alignmentstats.py
+For Julia: `rungdca.py` and `runplm.py`
+For CD-HIT: `alignmentstats.py`
 
 # Installation
 
