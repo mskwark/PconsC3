@@ -43,7 +43,7 @@ For CD-HIT: `alignmentstats.py`
 
 # Running the software
 
-Before the first run, download and unpack the trained Random Forests in the same directory as the PconsC3 code. You should have six subdirectories named `tforest0, tforest1,...tforest5`. You can get them from [Google Drive](https://drive.google.com/folderview?id=0BxpeugdrylmAaGtmdlVaWXpIUkU&usp=sharing).
+Before the first run, download and unpack the trained Random Forests in the same directory as the PconsC3 code. You should have six subdirectories named `tforest0, tforest1,...tforest5`. You can get them from [Google Drive](https://drive.google.com/drive/folders/0BxpeugdrylmAaGtmdlVaWXpIUkU) or a [local mirror](https://share.ics.aalto.fi/project/pconsc2/pconsc3.forests.all.tar.xz) (378MiB).
 
 ```
 > tar -xJf pconsc3-forests.tar.xz
