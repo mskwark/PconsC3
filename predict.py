@@ -5,7 +5,7 @@ import sys
 import os, random, time
 import numpy as np
 
-forestlocation = '/dev/shm/marcin'
+forestlocation = '/dev/shm/'
 
 # maximum time per layer
 maxtime = pow(10,6)
@@ -16,7 +16,7 @@ maxtime = pow(10,6)
 treefraction = 1.0
 
 if not os.path.exists(forestlocation):
-    forestlocation = '.'
+    forestlocation =  os.path.dirname(os.path.realpath(__file__))
 
 for i in range(5):
     abort = False
