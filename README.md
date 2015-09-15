@@ -7,7 +7,7 @@ If you use PconsC3 please cite:
 
 # Prerequisites
 
-* Julia interpreter (ver. 0.3 and up is supported). Present in most Linux repositories, otherwise download it from [Julia](http://julialang.org/) website.
+* Julia interpreter (ver. 0.3 and up is supported). Present in most Linux repositories (Ubuntu , otherwise download it from [Julia](http://julialang.org/) website.
 * Python interpreter (2.7+)
 * CD-HIT. Available in most Linux distributions, otherwise downloadable from [GitHub](https://github.com/weizhongli/cdhit)
 * A way to generate multiple sequence alignments (or a FASTA formatted MSA).
@@ -34,6 +34,7 @@ For CD-HIT: `alignmentstats.py`
     * [GaussDCA](https://github.com/carlobaldassi/GaussDCA.jl)
     ```
     julia> Pkg.clone("https://github.com/carlobaldassi/GaussDCA.jl")
+    julia> Pkg.clone("https://github.com/carlobaldassi/ArgParse.jl")
     ```
     * [PlmDCA](http://journals.plos.org/ploscompbiol/article?id=10.1371/journal.pcbi.1003847). Install a (very slightly) modified version of [PlmDCA.jl](https://github.com/pagnani/PlmDCA)
     ```
