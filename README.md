@@ -44,13 +44,13 @@ For CD-HIT: `alignmentstats.py`
 
 # Running the software
 
-Before the first run, download and unpack the trained Random Forests in the same directory as the PconsC3 code. You should have six subdirectories named `tforest0, tforest1,...tforest5`. You can get them from [Google Drive](https://drive.google.com/drive/folders/0BxpeugdrylmAaGtmdlVaWXpIUkU) or a [local mirror](https://share.ics.aalto.fi/project/pconsc2/pconsc3.forests.all.tar.xz) (378MiB).
+Before the first run, download and unpack the trained Random Forests in the same directory as the PconsC3 code. You should have six subdirectories named `tforest0, tforest1,...tforest5`. You can get them from [Google Drive](https://drive.google.com/open?id=0BxpeugdrylmAV2pwVXpPcW5JR3c) or a [local mirror](https://share.ics.aalto.fi/project/pconsc2/pconsc3.forests.all.tar.xz) (378MiB). If you just want to give PconsC3 a try or for some other reason need a smaller archive, feel free to download the mini-version either from [Google Drive](https://drive.google.com/open?id=0BxpeugdrylmAS1UzNG1oemh3Y3c) or [local mirror](https://share.ics.aalto.fi/project/pconsc2/minitrees.tar.xz) (38MB), being advised that this version may not perform as well as the fully-fledged one (but will be roughly 10x faster!).
 
 ```
 > tar -xJf pconsc3-forests.tar.xz
 ```
 
-You may want to put them on a fast filesystem (on a relatively recent Linux machine `/dev/shm/` is a good choice).
+You may want to put them on a fast filesystem (on a relatively recent Linux machine `/dev/shm/` is a good choice and by default PconsC3 will look for them there (i.e. it will check if `/dev/shm/tforest0` etc. exist and are sane). As a fallback it will look in the same directory `./predict.py` is located. If you want to change it, you need to modify `forestlocation` variable in the head of `./predict.py`. 
 
 To run PconsC3, you need to have at hand:
  * Your input alignment in FASTA format, retaining only these columns that you want to run the prediction for (most often: all the match states/amino acids in your target sequence). For A3M alignments this can be attained by filtering all the lowercase letters (inserts) from the sequences.
