@@ -7,9 +7,12 @@ execdir = os.path.dirname(os.path.realpath(__file__))
 cdhit = find_executable('cd-hit')
 
 if not cdhit:
+    cdhit = find_executable('cdhit')
+if not cdhit:
     for d in ['/home/skwarkmj/sw/cd-hit', '.']:
         if os.path.exists(d + '/cd-hit'):
             cdhit = d + '/cd-hit'
+
 if not cdhit:
     sys.stderr.write('Cannot find CD-HIT!\n')
     sys.exit(0)
