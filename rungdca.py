@@ -22,16 +22,15 @@ alignment = sys.argv[1]
 
 if not os.path.exists(alignment):
     sys.stderr.write('Input alignment {:s} does not exist.\n'.format(alignment))
-	sys.exit(0)
+    sys.exit(0)
 
 stem = alignment[:alignment.rfind('.')]
-strength = sys.argv[2]
 
 if os.path.exists(stem + '.gdca'):
     sys.stderr.write('Output file {:s}.gdca exists.\n'.format(stem))
     sys.exit(0)
 
-a = subprocess.check_output('{0:s} -p {1:d} {2:s}/rungDCA.jl {3:s} {4:s}..gdca'.format(julia, cpus, execdir, alignment, stem), shell=True)
+a = subprocess.check_output('{0:s} -p {1:d} {2:s}/rungDCA.jl {3:s} {4:s}.gdca'.format(julia, cpus, execdir, alignment, stem), shell=True)
 
 f = open(stem + '.gneff', 'w')
 f.write(a)

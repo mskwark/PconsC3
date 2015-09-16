@@ -2,7 +2,7 @@
 
 using ArgParse
 using GaussDCA
-using Plmdca
+using PlmDCA
 
 
 function parse_commandline()
