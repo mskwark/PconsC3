@@ -14,20 +14,20 @@ if not julia:
     sys.exit(0)
 
 
-print julia
+print "Using: ",julia
 
 cpus = multiprocessing.cpu_count()
 
 alignment = sys.argv[1]
 
 if not os.path.exists(alignment):
-    sys.stderr.write('Input alignment {:s} does not exist.\n'.format(alignment))
+    sys.stderr.write('Error: Input alignment {:s} does not exist.\n'.format(alignment))
     sys.exit(0)
 
 stem = alignment[:alignment.rfind('.')]
 
 if os.path.exists(stem + '.gdca'):
-    sys.stderr.write('Output file {:s}.gdca exists.\n'.format(stem))
+    sys.stderr.write("Error: Output file exists.\n")
     sys.exit(0)
 
 a = subprocess.check_output('{0:s} -p {1:d} {2:s}/rungDCA.jl {3:s} {4:s}.gdca'.format(julia, cpus, execdir, alignment, stem), shell=True)
