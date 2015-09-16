@@ -15,7 +15,7 @@ maxtime = pow(10,6)
 
 treefraction = 1.0
 
-if not os.path.exists(forestlocation):
+if not os.path.exists(forestlocation + '/tlayer0'):
     forestlocation =  os.path.dirname(os.path.realpath(__file__))
 
 for i in range(5):
