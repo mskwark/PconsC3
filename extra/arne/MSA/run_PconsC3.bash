@@ -17,8 +17,11 @@ workdir=$2 # Optional: Working directory
 #make sure everything is in the path
 export PATH=$PATH:$HOME/git/PconsC3/
 export PATH=$PATH:/scratch/arne/PconsC3/bin/../dependencies/hhsuite-2.0.16-linux-x86_64/bin:/scratch/arne/PconsC3/bin/../dependencies/hhsuite-2.0.16-linux-x86_64_patch/bin:/scratch/arne/PconsC3/bin/../dependencies/netsurfp-1.0/bin:/scratch/arne/PconsC3/bin/../dependencies/phycmap.release/bin:/scratch/arne/PconsC3/bin/../dependencies/psipred/bin:/scratch/arne/PconsC3/bin/../dependencies/blast:/scratch/arne/PconsC3/bin/../dependencies/cd-hit-v4.5.4-2011-03-07:/scratch/arne/PconsC3/bin/../dependencies/hhsuite-2.0.16-linux-x86_64:/scratch/arne/PconsC3/bin/../dependencies/hhsuite-2.0.16-linux-x86_64_patch:/scratch/arne/PconsC3/bin/../dependencies/hmmer-3.1b2-linux-intel-x86_64:/scratch/arne/PconsC3/bin/../dependencies/netsurfp-1.0:/scratch/arne/PconsC3/bin/../dependencies/phycmap.release:/scratch/arne/PconsC3/bin/../dependencies/plmDCA_asymmetric_v2:/scratch/arne/PconsC3/bin/../dependencies/psipred
+
 bin="/scratch/arne/contactpreds/chaperonin/bin/"
 PconsC3=$HOME/git/PconsC3/
+#HHLIB=/scratch/arne/PconsC2-extra/hhsuite-2.0.16-linux-x86_64/lib/hh/
+export HHLIB=/usr/local/lib/hh/
 # ----------
 
 currdir=`pwd -P`
@@ -33,41 +36,71 @@ then
 fi
 
 
-$numseq=`grep -c \> $seqfile`
+
+
 
 seqname=`basename  $seqfile`
+rootname=`echo $seqname | sed -E "s/\..*//"`
 cp $seqfile $workdir
 cd $workdir
 
-rootname=`echo $seqname | sed -E "s/\..*//"`
-#seqfile=`basename $1 .aln`
-#seqfile=$dir"/"$name
-
-# 
-
-
+#check if we have a muktiple sequence alignment or a single sequence
+numseq=`grep -c \> $seqname`
+if [[ $numseq -gt 2 ]]
+then
 # First sequence needs to be trimmed
-$bin/trimsequence.py $seqname > $seqfile.trimmed
-head -2 $seqfile.trimmed > $seqfile.fasta
+    $bin/trimsequence.py $seqname > $rootname.trimmed
+    head -2 $rootname.trimmed > $rootname.fasta
+    SEQ=$rootname.fasta
+    ALN=$rootname.trimmed
+else
+# We need to run hhblits
+    i='hhE0'
+    
+    if [[ ! -s $rootname.trimmed ]] 
+    then 
+	$bin/runhhblits.py -c $cpu -name $i -e 1 $seqname
+	$bin/a3mToTrimmed.py $seqname.$i.a3m > $rootname.trimmed 
+    fi
+    SEQ=$seqname
+    ALN=$rootname.trimmed
+fi
 
-# Add secondary structure (Could perhaps be replaces by SSPRO but format is not the same)
-$bin/addss.pl $seqfile.fas $seqfile.addss -fas
+# Now we should have the sequences.
+
+# Predict secondary structure (Could perhaps be replaces by SSPRO but format is not the same)
+if [ ! -s $rootname.ss2 ]
+then
+    $bin/addss.pl $ALN $ALN.addss -fas 
+fi
 # Surface are prediction Run Netsurfp (could perhaps be replace by SSPRO)
-$bin/runnetsurfp.py $seqfile.fas
-#
+if [ ! -s $SEQ.rsa ]
+then
+    $bin/runnetsurfp.py $SEQ
+fi
 
 # Run svmcon (the best thing I could find)
-$bin/predict_map.sh $seqfile.fasta $seqfile.svmcon.rr $seqfile.trimmed.aln
+if [ ! -s $SEQ.rr ]
+then
+    echo $numseq > $ALN.raw
+    grep -v \> $ALN >> $ALN.raw
+    $bin/predict_map.sh $SEQ $SEQ.rr $ALN.raw
+fi
 
 
 # Run plmdca
-$PconsC3/runplmdca.py $seqfile.trimmed
+if [ ! -s $ALN.0.02.plm20 ]
+then
+    $PconsC3/runplm.py $ALN
+fi
 # Run gdca
-$PconsC3/rungdca.py $seqfile.trimmed
-
+if [ ! -s $ALN.gdca ]
+then
+    $PconsC3/rungdca.py $ALN
+fo
 # and now run PconsC3
-$PconsC3/predict.py $seqfile.gdca $seqfile.0.02.plm20 $seqfile.rr $seqfile.rsa $seqfile.ss2 $seqfile.gneff $seqfile.trimmed $seqfile.PconsC3
-
+$PconsC3/predict.py $ALN.gdca $ALN.0.02.plm20 $SEQ.rr $SEQ.rsa $rootname.ss2 $ALN.gneff $ALN $seqfile.PconsC3
+cp *l5 $curddir/
 
 # 
 cd $currdir

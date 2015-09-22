@@ -67,8 +67,9 @@ else
 $ssa_file .= ".ssa"; 
 #$align_file = "${ssa_file}.align"; 
 print "predict secondary structure and solvent accessibility...\n";
-#print "$ssa_predictor $fasta_file $ssa_file\n"; 
-system("$ssa_predictor $fasta_file $ssa_file $cpu->count"); 
+$numcpu=$cpu->count;
+print "$ssa_predictor $fasta_file $ssa_file  $numcpu\n"; 
+system("$ssa_predictor $fasta_file $ssa_file $numcpu"); 
 #notice: two files are generated from ssa predictor: one is ssa output, one is alignment file. 
 
 # Modifed to be able to use SCRATCH preditors (different format and separate files)
