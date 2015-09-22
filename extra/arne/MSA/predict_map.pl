@@ -11,7 +11,7 @@
 
 if (@ARGV != 7)
 {
-	die "need 6 parameters: script dir (SVMcon dir), ssa predictor (SCRATCH), svm classifier (SVM-light), svm model (trained SVM model), input file in FASTA format, output file align_file.\n"; 
+	die "need 7 parameters: script dir (SVMcon dir), ssa predictor (SCRATCH), svm classifier (SVM-light), svm model (trained SVM model), input file in FASTA format, output file align_file.\n"; 
 }
 $script_dir = shift @ARGV;
 $ssa_predictor = shift @ARGV;
@@ -38,6 +38,10 @@ if (! -f $svm_model)
 if (! -f $fasta_file)
 {
 	die "can't find the fasta file.\n"; 
+}
+if (! -f $align_file)
+{
+	die "can't find the align file.\n"; 
 }
 open(FASTA, "$fasta_file") || die "can't open fasta file.\n"; 
 $target_name = <FASTA>; 
