@@ -1,4 +1,9 @@
 #! /usr/bin/perl -w
+use Sys::Info;
+use Sys::Info::Constants qw( :device_cpu );
+my $info = Sys::Info->new;
+my $cpu  = $info->device( CPU => %options );
+
 
 ##################################################################
 # Predict contact map for one single sequence in fasta format
@@ -63,7 +68,7 @@ $ssa_file .= ".ssa";
 #$align_file = "${ssa_file}.align"; 
 print "predict secondary structure and solvent accessibility...\n";
 #print "$ssa_predictor $fasta_file $ssa_file\n"; 
-system("$ssa_predictor $fasta_file $ssa_file"); 
+system("$ssa_predictor $fasta_file $ssa_file $cpu->count"); 
 #notice: two files are generated from ssa predictor: one is ssa output, one is alignment file. 
 
 # Modifed to be able to use SCRATCH preditors (different format and separate files)
