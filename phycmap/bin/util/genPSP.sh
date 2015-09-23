@@ -25,15 +25,12 @@ BLASTDB=$RaptorX_HOME/databases/NR_new/dummy_db
 
 ###### BY TINA, May 6, 2003
 # first make PSP directory if it doesn't exist
-echo "Running directory is $2";
 if [ ! -d $2 ] ; then
     mkdir $2
 fi
 ###### BY TINA, May 6, 2003
 
 bname=`basename $1 .seq`
-echo "I am GenPSP"
-echo $2/$bname
 
 $BLASTPGP -a $RaptorX_CPU -B $2/$bname.clu -d $BLASTDB -i $1 -C $2/$bname.chk -Q $2/$bname.psp
 cp -v $2/$bname.chk $2/$bname"_sse.chk"
