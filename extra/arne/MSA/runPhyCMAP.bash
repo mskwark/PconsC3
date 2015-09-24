@@ -12,7 +12,8 @@ error_rrr="rrr.pl error";
 error_ilp="Ilp running error!";
 
 seqfile=$1
-#MSAFILE=$2
+MSAFILE=$2
+cur
 seqbase=`basename $seqfile|sed -e s/\.seq$// |sed -e s/\.fa$// |sed -e s/\.fasta$//  `;
 while [ "$1" != "" ]; do
     case $1 in
@@ -93,8 +94,6 @@ a3mfile=$pdbid.a3m
 
 fi
 
-# Here is the trick to use a preformatted alignment
-# cp $2 $a3mfile.fasta
 
 $bindir/reformat.pl -r -noss $a3mfile $a3mfile.fasta &> $workdir/reformat.log
 touch $pdbid.rr

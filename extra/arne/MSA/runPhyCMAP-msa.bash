@@ -138,6 +138,8 @@ tempoutfile="$pdbid.pred.feature"
 a=`which R`
 if [ $? -ne 0 ] ;then echo "ERR-R R not installed" ; exit -1 ;fi
 
+pwd
+
 $bindir/rrr.pl -evfile $moreevfile -lib $PDBTOOLS_DIR   -pdb $pdbid  -act predict  -tpl $tgtfile -epadca $workdir/$pdbid.epadca.prob -epadcb $workdir/$pdbid.epadcb.prob -bps $bpsfile -mi $mifile -out $tempoutfile -outfile $rfpredfile -modelFile $bindir/model_rf379_24up_cb_new  -r_exe `which R`  -methodStr rf379 -featureSetStr 3:379  -Routputfile $pdbid.rout  &> $workdir/r.stdout 
 
 if [ $? -ne 0 ] ;then echo "ERR7 $error_rrr" ; exit -1 ;fi
@@ -157,6 +159,6 @@ mv $pdbid.rr2  $currdir/$pdbid.rr
 
 
 if [ "$currdir" != "$install_dir/test" ] ; then
-#rm -rf $workdir ;
+rm -rf $workdir ;
 fi
 
