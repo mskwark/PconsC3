@@ -34,6 +34,15 @@ then
     mkdir -p $workdir
     if [ $? -ne 0 ];then echo "ERROR cannot make $workdir" ; exit $? ; fi
 fi
+cpu=4
+while [ "$1" != "" ]; do
+    case $1 in
+        -cpu ) shift
+	    cpu=$1
+	    ;;
+    esac
+    shift
+done
 
 
 
