@@ -1,6 +1,6 @@
 #!/bin/bash -x
 
-install_dir="/scratch/arne/PconsC2-extra/PhyCmap/phycmap.release/"
+install_dir="/proj/bioinfo/software/PconsC2-extra/PhyCmap/phycmap.release/"
 
 #this script can be used for webserver other than standalone, since we do not
 #have a slim version of epad and matlab bioinformatics package, and R

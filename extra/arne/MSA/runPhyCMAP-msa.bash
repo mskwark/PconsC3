@@ -1,6 +1,6 @@
 #!/bin/bash -x
 
-install_dir="/scratch/arne/PconsC2-extra/PhyCmap/phycmap.release/"
+install_dir="/proj/bioinfo/software/PconsC2-extra/PhyCmap/phycmap.release/"
 
 #this script can be used for webserver other than standalone, since we do not
 #have a slim version of epad and matlab bioinformatics package, and R
@@ -55,6 +55,7 @@ workdir=`pwd`/$workdir
 mkdir -p $workdir
 if [ $? -ne 0 ];then echo "ERR1 $error_file_io" ; exit $? ; fi
 
+
 cp $seqfile $workdir
 seqfile=`basename $seqfile`
 sendbackdir=$3
@@ -96,6 +97,9 @@ fi
 # Here is the trick to use a preformatted alignment
 # cp $2 $a3mfile.fasta
 # here is the trick to use a preformatted (a3m) alignment.
+pwd
+set
+
 rm $a3mfile
 cp $currdir/$MSAFILE $a3mfile
 
@@ -159,6 +163,6 @@ mv $pdbid.rr2  $currdir/$pdbid.rr
 
 
 if [ "$currdir" != "$install_dir/test" ] ; then
-rm -rf $workdir ;
+#rm -rf $workdir ;
 fi
 
