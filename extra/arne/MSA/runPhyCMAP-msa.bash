@@ -49,7 +49,7 @@ epadCbDir="$install_dir/bin/epad.cb/"
 bindir="$install_dir/bin"
 pretagdir=$install_dir/bin/Pretag_To_EPAD/
 currdir=`pwd -P`
-workdir=`echo '$dir=int(rand(100000));$dir=".phycmaptmp.$dir.$ARGV[0]";if(-d $dir||-e $dir){ }else{print $dir}' | perl - $pdbid` 
+workdir=`echo '$dir=int(rand(100000));$dir=".phycmapMSAtmp.$dir.$ARGV[0]";if(-d $dir||-e $dir){ }else{print $dir}' | perl - $pdbid` 
 workdir=`pwd`/$workdir
 
 mkdir -p $workdir
@@ -144,9 +144,31 @@ if [ $? -ne 0 ] ;then echo "ERR-R R not installed" ; exit -1 ;fi
 
 pwd
 
+`which R`
+
+ls -l 
+
+ls -l $bindir/rrr-new.pl  $moreevfile  $PDBTOOLS_DIR    $pdbid  $tgtfile $workdir/$pdbid.epadca.prob  $workdir/$pdbid.epadcb.prob  $bpsfile  $mifile  $tempoutfile  $rfpredfile  $bindir/model_rf379_24up_cb_new    $pdbid.rout
+
+sleep 60
+
 $bindir/rrr.pl -evfile $moreevfile -lib $PDBTOOLS_DIR   -pdb $pdbid  -act predict  -tpl $tgtfile -epadca $workdir/$pdbid.epadca.prob -epadcb $workdir/$pdbid.epadcb.prob -bps $bpsfile -mi $mifile -out $tempoutfile -outfile $rfpredfile -modelFile $bindir/model_rf379_24up_cb_new  -r_exe `which R`  -methodStr rf379 -featureSetStr 3:379  -Routputfile $pdbid.rout  &> $workdir/r.stdout 
 
-if [ $? -ne 0 ] ;then echo "ERR7 $error_rrr" ; exit -1 ;fi
+cat $pdbid.rout
+
+sleep 60
+
+$bindir/rrr-new.pl -evfile $moreevfile -lib $PDBTOOLS_DIR   -pdb $pdbid  -act predict  -tpl $tgtfile -epadca $workdir/$pdbid.epadca.prob -epadcb $workdir/$pdbid.epadcb.prob -bps $bpsfile -mi $mifile -out $tempoutfile -outfile $rfpredfile -modelFile $bindir/model_rf379_24up_cb_new  -r_exe `which R`  -methodStr rf379 -featureSetStr 3:379  -Routputfile $pdbid.new.rout  &> $workdir/r-new.stdout 
+
+cat $pdbid.new.rout
+
+sleep 60
+
+$bindir/rrr-org.pl -evfile $moreevfile -lib $PDBTOOLS_DIR   -pdb $pdbid  -act predict  -tpl $tgtfile -epadca $workdir/$pdbid.epadca.prob -epadcb $workdir/$pdbid.epadcb.prob -bps $bpsfile -mi $mifile -out $tempoutfile -outfile $rfpredfile -modelFile $bindir/model_rf379_24up_cb_new  -r_exe `which R`  -methodStr rf379 -featureSetStr 3:379  -Routputfile $pdbid.org.rout  &> $workdir/r-org.stdout 
+
+cat $pdbid.org.rout
+
+#if [ $? -ne 0 ] ;then echo "ERR7 $error_rrr" ; exit -1 ;fi
 
 echo "PhyCMAP: Computing the contact map with constraints..."
 

@@ -69,7 +69,8 @@ trim2jones = root + 'scripts/a3mToJones.py'
 trim2trimmed = root + 'scripts/a3mToTrimmed.py'
 
 # Reformat script scavenged from HHsuite. Please cite the HHblits paper!
-reformat = root + 'scripts/reformat.pl'
+#reformat = root + 'scripts/reformat.pl'
+reformat = '/proj/bioinfo/software/PconsC2-extra/hhsuite-2.0.16-linux-x86_64/scripts/reformat.pl'
 
 # Maximum amount of cores to use per default
 n_cores = multiprocessing.cpu_count()
