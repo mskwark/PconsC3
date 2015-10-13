@@ -24,9 +24,14 @@ error_getfeature="getfeature error";
 error_rrr="rrr.pl error";
 error_ilp="Ilp running error!";
 
-seqfile=$1
-MSAFILE=$2
-cur
+oldseqfile=$1
+oldseqbase=`basename $oldseqfile|sed -e  s/\.[^\.]*$//`;
+RAND=$$
+newseqfile=${oldseqbase}_$RAND.fasta
+
+ln -fs $oldseqfile $newseqfile
+
+seqfile=$newseqfile
 seqbase=`basename $seqfile|sed -e s/\.seq$// |sed -e s/\.fa$// |sed -e s/\.fasta$//  `;
 while [ "$1" != "" ]; do
     case $1 in
@@ -44,8 +49,7 @@ fi
 
 # To avoid raise condiditons we change the pdbid to conta a random number
 
-RAND=$$
-pdbid=${pdbid}_$$
+
 
 
 if [ $BLAST_CPU -gt 1 &> /dev/null ] ; then :
@@ -172,5 +176,6 @@ mv $pdbid.rr2  $currdir/$pdbid.rr
 
 if [ "$currdir" != "$install_dir/test" ] ; then
 #rm -rf $workdir ;
+#rm $newseqfile;
 fi
 

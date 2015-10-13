@@ -24,9 +24,23 @@ error_getfeature="getfeature error";
 error_rrr="rrr.pl error";
 error_ilp="Ilp running error!";
 
-seqfile=$1
-MSAFILE=$2
+oldseqfile=$1
+oldmsafile=$2
+
+oldseqbase=`basename $oldseqfile|sed -e  s/\.[^\.]*$//`;
+oldmsabase=`basename $oldmsafile|sed -e  s/\.[^\.]*$//`;
+
+RAND=$$
+newseqfile=${oldseqbase}_$RAND.fasta
+newmsafile=${oldmsabase}_$RAND.aln
+
+ln -fs $oldseqfile $newseqfile
+ln -fs $oldmsafile $newmsafile
+
+seqfile=$newseqfile
+msafile=$newmsafile
 seqbase=`basename $seqfile|sed -e s/\.seq$// |sed -e s/\.fa$// |sed -e s/\.fasta$//  `;
+
 while [ "$1" != "" ]; do
     case $1 in
         -cpu ) shift
@@ -41,7 +55,6 @@ done
     pdbid=$seqbase
 #fi
 
-RAND=$$
 pdbid=${pdbid}_$$
 
 
@@ -118,7 +131,7 @@ pwd
 set
 
 rm $a3mfile
-cp $currdir/$MSAFILE $a3mfile
+cp $currdir/$msafile $a3mfile
 
 $bindir/reformat.pl -r -noss $a3mfile $a3mfile.fasta &> $workdir/reformat.log
 touch $pdbid.rr
@@ -203,5 +216,7 @@ mv $pdbid.rr2  $currdir/$pdbid.rr
 
 if [ "$currdir" != "$install_dir/test" ] ; then
 #rm -rf $workdir ;
+#rm $newseqfile;
+#rm $newmsafile;
 fi
 
