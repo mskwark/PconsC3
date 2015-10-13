@@ -144,11 +144,11 @@ if [ $? -ne 0 ] ;then echo "ERR-R R not installed" ; exit -1 ;fi
 
 pwd
 
-`which R`
+#`which R`
 
 ls -l 
 
-ls -l $bindir/rrr-new.pl  $moreevfile  $PDBTOOLS_DIR    $pdbid  $tgtfile $workdir/$pdbid.epadca.prob  $workdir/$pdbid.epadcb.prob  $bpsfile  $mifile  $tempoutfile  $rfpredfile  $bindir/model_rf379_24up_cb_new    $pdbid.rout
+#ls -l $bindir/rrr-new.pl  $moreevfile  $PDBTOOLS_DIR    $pdbid  $tgtfile $workdir/$pdbid.epadca.prob  $workdir/$pdbid.epadcb.prob  $bpsfile  $mifile  $tempoutfile  $rfpredfile  $bindir/model_rf379_24up_cb_new    $pdbid.rout
 
 sleep 60
 
