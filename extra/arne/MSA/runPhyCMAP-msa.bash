@@ -41,6 +41,9 @@ done
     pdbid=$seqbase
 #fi
 
+RAND=$$
+pdbid=$pdbid.$$
+
 
 
 if [ $BLAST_CPU -gt 1 &> /dev/null ] ; then :
@@ -62,7 +65,8 @@ epadCbDir="$install_dir/bin/epad.cb/"
 bindir="$install_dir/bin"
 pretagdir=$install_dir/bin/Pretag_To_EPAD/
 currdir=`pwd -P`
-workdir=`echo '$dir=int(rand(100000));$dir=".phycmapMSAtmp.$dir.$ARGV[0]";if(-d $dir||-e $dir){ }else{print $dir}' | perl - $pdbid` 
+#workdir=`echo '$dir=int(rand(100000));$dir=".phycmapMSAtmp.$dir.$ARGV[0]";if(-d $dir||-e $dir){ }else{print $dir}' | perl - $pdbid` 
+workdir=`echo '$dir=".phycmaptmp.$ARGV[0]";if(-d $dir||-e $dir){ }else{print $dir}' | perl - $pdbid` 
 workdir=`pwd`/$workdir
 
 mkdir -p $workdir
