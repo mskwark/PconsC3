@@ -1,6 +1,14 @@
 #!/bin/bash -x
 
-install_dir="/proj/bioinfo/software/PconsC2-extra/PhyCmap/phycmap.release/"
+if [ -n ` hostname | grep  hpc2n ` ] 
+then
+    install_dir="/pfs/nobackup/home/a/arnee/Software/PconsC2-extra/PhyCmap/phycmap.release/"
+elif  [ -n ` hostname | grep  nsc ` ] 
+then
+    install_dir="/proj/bioinfo/software/PconsC2-extra/PhyCmap/phycmap.release/"
+else
+    install_dir="/scratch/arne/PconsC2-extra/PhyCmap/phycmap.release/"
+fi
 
 #this script can be used for webserver other than standalone, since we do not
 #have a slim version of epad and matlab bioinformatics package, and R
