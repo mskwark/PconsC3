@@ -55,7 +55,6 @@ done
     pdbid=$seqbase
 #fi
 
-pdbid=${pdbid}_$$
 
 
 
