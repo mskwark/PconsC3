@@ -45,7 +45,7 @@ fi
 # To avoid raise condiditons we change the pdbid to conta a random number
 
 RAND=$$
-pdbid=$pdbid.$$
+pdbid=${pdbid}_$$
 
 
 if [ $BLAST_CPU -gt 1 &> /dev/null ] ; then :

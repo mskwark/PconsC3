@@ -42,7 +42,7 @@ done
 #fi
 
 RAND=$$
-pdbid=$pdbid.$$
+pdbid=${pdbid}_$$
 
 
 
