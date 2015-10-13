@@ -175,7 +175,9 @@ mv $pdbid.rr2  $currdir/$pdbid.rr
 
 
 if [ "$currdir" != "$install_dir/test" ] ; then
-#rm -rf $workdir ;
-#rm $newseqfile;
+rm -rf $workdir ;
+rm $newseqfile;
+mv $seqbase.rr $oldseqbase.rr
+mv $seqbase.rrunsort $oldseqbase.rrunsort
 fi
 
