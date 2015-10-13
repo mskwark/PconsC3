@@ -1,10 +1,10 @@
 #!/bin/bash -x
 
 
-if [ -n ` hostname | grep  hpc2n ` ] 
+if [  ` hostname | grep -c hpc2n ` == "1" ] 
 then
     install_dir="/pfs/nobackup/home/a/arnee/Software/PconsC2-extra/PhyCmap/phycmap.release/"
-elif  [ -n ` hostname | grep  nsc ` ] 
+elif  [ ` hostname | grep -c triolith ` == "1" ] 
 then
     install_dir="/proj/bioinfo/software/PconsC2-extra/PhyCmap/phycmap.release/"
 else
