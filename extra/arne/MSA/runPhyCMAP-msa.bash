@@ -127,13 +127,11 @@ fi
 # Here is the trick to use a preformatted alignment
 # cp $2 $a3mfile.fasta
 # here is the trick to use a preformatted (a3m) alignment.
-pwd
-set
 
 rm $a3mfile
 cp $currdir/$msafile $a3mfile
 
-$bindir/reformat.pl -r -noss $a3mfile $a3mfile.fasta &> $workdir/reformat.log
+${bindir}/reformat.pl -r -noss $a3mfile $a3mfile.fasta &> $workdir/reformat.log
 touch $pdbid.rr
 #compute the tgt file and a2m file
 #copy raptorx2:/home/majianzhu/LRR/CNFsearch and setup it!

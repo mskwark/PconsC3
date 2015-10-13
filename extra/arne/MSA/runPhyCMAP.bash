@@ -117,7 +117,7 @@ a3mfile=$pdbid.a3m
 fi
 
 
-$bindir/reformat.pl -r -noss $a3mfile $a3mfile.fasta &> $workdir/reformat.log
+${bindir}/reformat.pl -r -noss $a3mfile $a3mfile.fasta &> $workdir/reformat.log
 touch $pdbid.rr
 #compute the tgt file and a2m file
 #copy raptorx2:/home/majianzhu/LRR/CNFsearch and setup it!
