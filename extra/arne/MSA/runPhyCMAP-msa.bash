@@ -87,8 +87,8 @@ tgtfile="../$pdbid.tgt"
 a3mfile="../$pdbid.a3m"
 
 if [[ -f $tgtfile && -f $a3mfile ]] ; then
-ln -s $tgtfile $workdir
-ln -s $a3mfile $workdir
+ln -fs $tgtfile $workdir
+ln -fs $a3mfile $workdir
 tgtfile=`basename $tgtfile`;
 a3mfile=`basename $a3mfile`;
 
@@ -96,8 +96,8 @@ else
 ( cd $CNFSEARCHDIR;
 ./buildFeature -i $workdir/$seqfile -o $pdbid.tgt -c $BLAST_CPU &> $workdir/buildFeature.log ; 
 if [ $? -ne 0 ];then echo "ERR2 $error_buildfeature" ; exit -1 ; fi
-ln -s $CNFSEARCHDIR/$pdbid.tgt  $workdir ;
-ln -s $CNFSEARCHDIR/tmp/$seqbase.a3m $workdir/$pdbid.a3m
+ln -fs $CNFSEARCHDIR/$pdbid.tgt  $workdir ;
+ln -fs $CNFSEARCHDIR/tmp/$seqbase.a3m $workdir/$pdbid.a3m
 ) 
 if [ $? -ne 0 ];then echo "ERR3" ; exit -1 ; fi
 

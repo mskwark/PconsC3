@@ -42,6 +42,10 @@ else
     pdbid=$seqbase
 fi
 
+# To avoid raise condiditons we change the pdbid to conta a random number
+
+$dir=int(rand(100000))
+
 
 
 if [ $BLAST_CPU -gt 1 &> /dev/null ] ; then :
