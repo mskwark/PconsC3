@@ -1,13 +1,17 @@
 #!/bin/bash -x
 
-if [  ` hostname | grep -c hpc2n ` == "1" ]
+if [ -a "/pfs/nobackup/home/a/arnee/Software/PconsC2-extra/PhyCmap/phycmap.release/" ]
 then
     install_dir="/pfs/nobackup/home/a/arnee/Software/PconsC2-extra/PhyCmap/phycmap.release/"
-elif  [ ` hostname | grep -c triolith ` == "1" ]
+elif [ -a "/proj/bioinfo/software/PconsC2-extra/PhyCmap/phycmap.release/" ]
 then
     install_dir="/proj/bioinfo/software/PconsC2-extra/PhyCmap/phycmap.release/"
-else
+elif [ -a "/scratch/arne/PconsC2-extra/PhyCmap/phycmap.release/" ]
+then
     install_dir="/scratch/arne/PconsC2-extra/PhyCmap/phycmap.release/"
+else
+    "ERROR No Path "
+    exit -1
 fi
 
 
