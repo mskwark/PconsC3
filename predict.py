@@ -5,7 +5,8 @@ import sys
 import os, random, time
 import numpy as np
 
-forestlocation = '/dev/shm/'
+
+#forestlocation = '/dev/shm/'
 
 # maximum time per layer
 maxtime = pow(10,6)
@@ -14,6 +15,23 @@ maxtime = pow(10,6)
 # while expected precision is roughly the same for values > 0.3
 
 treefraction = 1.0
+
+if len(sys.argv) != 10:
+    print 'Usage: ' + sys.argv[0] + ' <files>'
+    print 'That is:'
+    print ' GaussDCA prediction'
+    print ' plmDCA.jl predictions'
+    print ' ML contact predictions'
+    print ' NetSurf RSA'
+    print ' SS file'
+    print ' Alignment stats'
+    print ' Alignment'
+    print ' Forrest Locations (eg /dev/shm/'
+    print ' Outfile'
+    sys.exit(1)
+
+files = sys.argv[1:]
+forestlocation = files[7]
 
 if not os.path.exists(forestlocation + '/tlayer0'):
     forestlocation =  os.path.dirname(os.path.realpath(__file__))
@@ -27,18 +45,6 @@ for i in range(5):
         sys.exit(0)
 
 firststart = time.time()
-if len(sys.argv) != 9:
-    print 'Usage: ' + sys.argv[0] + ' <files>'
-    print 'That is:'
-    print ' GaussDCA prediction'
-    print ' plmDCA.jl predictions'
-    print ' ML contact predictions'
-    print ' NetSurf RSA'
-    print ' SS file'
-    print ' Alignment stats'
-    print ' Alignment'
-    print ' Outfile'
-    sys.exit(1)
 
 def parsePSIPRED(f):
     SSdict = {}
@@ -136,14 +142,15 @@ def parseContacts(f):
         if float(x[-1]) < 8:
             contacts.add( (int(x[0]), int(x[1])) )
     return contacts
-files = sys.argv[1:]
 
 selected = set()
 contacts = {}
 X = []
 Y = []
 maxres = -1
-outfile = files[7]
+outfile = files[8]
+
+
 if os.path.exists(outfile):
     pass
 
