@@ -212,7 +212,8 @@ mv $pdbid.rr2  $currdir/$pdbid.rr
 
 
 if [ "$currdir" != "$install_dir/test" ] ; then
-rm -rf $workdir ;
+#rm -rf $workdir ;
+cd $currdir
 rm $newseqfile;
 rm $newmsafile;
 mv $seqbase.rr $oldseqbase.rr
