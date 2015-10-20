@@ -14,9 +14,10 @@ if not julia:
     sys.exit(0)
 
 
-print julia
-
 cpus = multiprocessing.cpu_count()
+
+cpus = 4
+print 'Using {:d} CPUs'.format(cpus)
 
 alignment = sys.argv[1]
 strength = "0.02"

@@ -32,14 +32,16 @@ if len(sys.argv) != 10:
     sys.exit(1)
 
 files = sys.argv[1:]
-forestlocation = files[7]
+maxdepth = -1
 
-if not os.path.exists(forestlocation + '/tlayer0'):
-    forestlocation =  os.path.dirname(os.path.realpath(__file__))
+if maxdepth < 0:
+    forestlocation = files[7] + '/tlayer{:d}'
+else:
+    forestlocation = files[7] + '/tlayer{:d}-' + str(maxdepth)
 
 for i in range(5):
     abort = False
-    if not os.path.exists(forestlocation + '/tlayer{:d}-6/tree.list'.format(i)):
+    if not os.path.exists(forestlocation.format(i) + '/tree.list'.format(i)):
         sys.stderr.write('Forest data for layer {:d} is missing.\n'.format(i))
         abort = True
     if abort:
@@ -362,7 +364,7 @@ def predict_tree(tree, q):
 
 # first layer
 sys.stderr.write('\nPredicting base layer:\n')
-p = predict(forestlocation + '/tlayer0-6/', X)
+p = predict(forestlocation.format(0), X)
 of = open(outfile + '.l0', 'w')
 previouslayer = {} 
 
@@ -391,7 +393,7 @@ for layer in range(1,2):
                     q.append(-3)
         X.append(q)
 
-    p = predict(forestlocation + '/tlayer{:d}-6/'.format(layer), X)
+    p = predict(forestlocation.format(layer), X)
 
     previouslayer = {}
     of = open(outfile + '.l{:d}'.format(layer), 'w')
