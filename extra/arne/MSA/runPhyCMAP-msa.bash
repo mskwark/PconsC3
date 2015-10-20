@@ -1,6 +1,19 @@
 #!/bin/bash -x
 
-install_dir="/scratch/arne/PconsC2-extra/PhyCmap/phycmap.release/"
+if [ -a "/pfs/nobackup/home/a/arnee/Software/PconsC2-extra/PhyCmap/phycmap.release/" ]
+then
+    install_dir="/pfs/nobackup/home/a/arnee/Software/PconsC2-extra/PhyCmap/phycmap.release/"
+elif [ -a "/proj/bioinfo/software/PconsC2-extra/PhyCmap/phycmap.release/" ]
+then
+    install_dir="/proj/bioinfo/software/PconsC2-extra/PhyCmap/phycmap.release/"
+elif [ -a "/scratch/arne/PconsC2-extra/PhyCmap/phycmap.release/" ]
+then
+    install_dir="/scratch/arne/PconsC2-extra/PhyCmap/phycmap.release/"
+else
+    "ERROR No Path "
+    exit -1
+fi
+
 
 #this script can be used for webserver other than standalone, since we do not
 #have a slim version of epad and matlab bioinformatics package, and R
@@ -11,9 +24,23 @@ error_getfeature="getfeature error";
 error_rrr="rrr.pl error";
 error_ilp="Ilp running error!";
 
-seqfile=$1
-MSAFILE=$2
+oldseqfile=$1
+oldmsafile=$2
+
+oldseqbase=`basename $oldseqfile|sed -e  s/\.[^\.]*$//`;
+oldmsabase=`basename $oldmsafile|sed -e  s/\.[^\.]*$//`;
+
+RAND=$$
+newseqfile=${oldseqbase}_$RAND.fasta
+newmsafile=${oldmsabase}_$RAND.aln
+
+ln -fs $oldseqfile $newseqfile
+ln -fs $oldmsafile $newmsafile
+
+seqfile=$newseqfile
+msafile=$newmsafile
 seqbase=`basename $seqfile|sed -e s/\.seq$// |sed -e s/\.fa$// |sed -e s/\.fasta$//  `;
+
 while [ "$1" != "" ]; do
     case $1 in
         -cpu ) shift
@@ -27,6 +54,7 @@ done
 #else
     pdbid=$seqbase
 #fi
+
 
 
 
@@ -49,11 +77,13 @@ epadCbDir="$install_dir/bin/epad.cb/"
 bindir="$install_dir/bin"
 pretagdir=$install_dir/bin/Pretag_To_EPAD/
 currdir=`pwd -P`
-workdir=`echo '$dir=int(rand(100000));$dir=".phycmaptmp.$dir.$ARGV[0]";if(-d $dir||-e $dir){ }else{print $dir}' | perl - $pdbid` 
+#workdir=`echo '$dir=int(rand(100000));$dir=".phycmapMSAtmp.$dir.$ARGV[0]";if(-d $dir||-e $dir){ }else{print $dir}' | perl - $pdbid` 
+workdir=`echo '$dir=".phycmaptmp.$ARGV[0]";if(-d $dir||-e $dir){ }else{print $dir}' | perl - $pdbid` 
 workdir=`pwd`/$workdir
 
 mkdir -p $workdir
 if [ $? -ne 0 ];then echo "ERR1 $error_file_io" ; exit $? ; fi
+
 
 cp $seqfile $workdir
 seqfile=`basename $seqfile`
@@ -73,8 +103,8 @@ tgtfile="../$pdbid.tgt"
 a3mfile="../$pdbid.a3m"
 
 if [[ -f $tgtfile && -f $a3mfile ]] ; then
-ln -s $tgtfile $workdir
-ln -s $a3mfile $workdir
+ln -fs $tgtfile $workdir
+ln -fs $a3mfile $workdir
 tgtfile=`basename $tgtfile`;
 a3mfile=`basename $a3mfile`;
 
@@ -82,8 +112,8 @@ else
 ( cd $CNFSEARCHDIR;
 ./buildFeature -i $workdir/$seqfile -o $pdbid.tgt -c $BLAST_CPU &> $workdir/buildFeature.log ; 
 if [ $? -ne 0 ];then echo "ERR2 $error_buildfeature" ; exit -1 ; fi
-ln -s $CNFSEARCHDIR/$pdbid.tgt  $workdir ;
-ln -s $CNFSEARCHDIR/tmp/$seqbase.a3m $workdir/$pdbid.a3m
+ln -fs $CNFSEARCHDIR/$pdbid.tgt  $workdir ;
+ln -fs $CNFSEARCHDIR/tmp/$seqbase.a3m $workdir/$pdbid.a3m
 ) 
 if [ $? -ne 0 ];then echo "ERR3" ; exit -1 ; fi
 
@@ -96,10 +126,11 @@ fi
 # Here is the trick to use a preformatted alignment
 # cp $2 $a3mfile.fasta
 # here is the trick to use a preformatted (a3m) alignment.
-rm $a3mfile
-cp $currdir/$MSAFILE $a3mfile
 
-$bindir/reformat.pl -r -noss $a3mfile $a3mfile.fasta &> $workdir/reformat.log
+rm $a3mfile
+cp $currdir/$msafile $a3mfile
+
+${bindir}/reformat.pl -r -noss $a3mfile $a3mfile.fasta &> $workdir/reformat.log
 touch $pdbid.rr
 #compute the tgt file and a2m file
 #copy raptorx2:/home/majianzhu/LRR/CNFsearch and setup it!
@@ -140,9 +171,31 @@ if [ $? -ne 0 ] ;then echo "ERR-R R not installed" ; exit -1 ;fi
 
 pwd
 
+#`which R`
+
+ls -l 
+
+#ls -l $bindir/rrr-new.pl  $moreevfile  $PDBTOOLS_DIR    $pdbid  $tgtfile $workdir/$pdbid.epadca.prob  $workdir/$pdbid.epadcb.prob  $bpsfile  $mifile  $tempoutfile  $rfpredfile  $bindir/model_rf379_24up_cb_new    $pdbid.rout
+
+sleep 60
+
 $bindir/rrr.pl -evfile $moreevfile -lib $PDBTOOLS_DIR   -pdb $pdbid  -act predict  -tpl $tgtfile -epadca $workdir/$pdbid.epadca.prob -epadcb $workdir/$pdbid.epadcb.prob -bps $bpsfile -mi $mifile -out $tempoutfile -outfile $rfpredfile -modelFile $bindir/model_rf379_24up_cb_new  -r_exe `which R`  -methodStr rf379 -featureSetStr 3:379  -Routputfile $pdbid.rout  &> $workdir/r.stdout 
 
-if [ $? -ne 0 ] ;then echo "ERR7 $error_rrr" ; exit -1 ;fi
+cat $pdbid.rout
+
+sleep 60
+
+$bindir/rrr-new.pl -evfile $moreevfile -lib $PDBTOOLS_DIR   -pdb $pdbid  -act predict  -tpl $tgtfile -epadca $workdir/$pdbid.epadca.prob -epadcb $workdir/$pdbid.epadcb.prob -bps $bpsfile -mi $mifile -out $tempoutfile -outfile $rfpredfile -modelFile $bindir/model_rf379_24up_cb_new  -r_exe `which R`  -methodStr rf379 -featureSetStr 3:379  -Routputfile $pdbid.new.rout  &> $workdir/r-new.stdout 
+
+cat $pdbid.new.rout
+
+sleep 60
+
+$bindir/rrr-org.pl -evfile $moreevfile -lib $PDBTOOLS_DIR   -pdb $pdbid  -act predict  -tpl $tgtfile -epadca $workdir/$pdbid.epadca.prob -epadcb $workdir/$pdbid.epadcb.prob -bps $bpsfile -mi $mifile -out $tempoutfile -outfile $rfpredfile -modelFile $bindir/model_rf379_24up_cb_new  -r_exe `which R`  -methodStr rf379 -featureSetStr 3:379  -Routputfile $pdbid.org.rout  &> $workdir/r-org.stdout 
+
+cat $pdbid.org.rout
+
+#if [ $? -ne 0 ] ;then echo "ERR7 $error_rrr" ; exit -1 ;fi
 
 echo "PhyCMAP: Computing the contact map with constraints..."
 
@@ -160,5 +213,9 @@ mv $pdbid.rr2  $currdir/$pdbid.rr
 
 if [ "$currdir" != "$install_dir/test" ] ; then
 rm -rf $workdir ;
+rm $newseqfile;
+rm $newmsafile;
+mv $seqbase.rr $oldseqbase.rr
+mv $seqbase.rrunsort $oldseqbase.rrunsort
 fi
 

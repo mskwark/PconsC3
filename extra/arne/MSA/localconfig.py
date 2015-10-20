@@ -23,39 +23,41 @@ PconsC3 = root + '../'
 
 ### Jackhmmer executable ###
 #jackhmmer = root + 'dependencies/hmmer-3.0/src/jackhmmer'
-jackhmmer = '/scratch/arne/PconsC2-extra/hmmer-3.1b1-linux-intel-x86_64/binaries/jackhmmer'
-uniref = '/scratch/data/uniref90.fasta'
+jackhmmer = '/proj/bioinfo/software/PconsC2-extra/hmmer-3.1b1-linux-intel-x86_64/binaries/jackhmmer'
+uniref = '/proj/bioinfo/data/uniref90.fasta'
 
 ### HHblits executable ###
 #hhblits = root + 'dependencies/hhsuite-2.0.16/bin/hhblits'
-hhblits = '/usr/local/bin/hhblits'
-hhdatabase = '/scratch/data/hhsuite/hhsuite_dbs/uniprot20_2013_03/uniprot20_2013_03'
+hhblits = '/software/apps/hhsuite/2.0.16/gcc01/hhsuite-2.0.16/bin/hhblits'
+hhdatabase = '/proj/bioinfo/data/hhsuite/hhsuite_dbs/uniprot20_2013_03/uniprot20_2013_03'
 
 ### PSICOV executable ###
 #psicov = root + 'dependencies/psicov-1.11/psicov'
-psicov = '/usr/local/bin/psicov'
+#psicov = '/usr/local/bin/psicov'
+psicov= '/proj/bioinfo/software/PconsC2-extra/psicov2/psicov2'
 
 ### NetSurfP executable ###
 #netsurf = root + 'dependencies/netsurfp-1.0/netsurfp'
-netsurf = '/usr/local/bin/netsurfp'
+netsurf = '/proj/bioinfo/software/PconsC2-extra/netsurfp-1.0/netsurfp'
 
 ### PSIPRED executable ###
 #psipred = root + 'dependencies/psipred/runpsipred'
-psipred = '/scratch/arne/PconsC2-extra/psipred/runpsipred'
+#psipred = '/scratch/arne/PconsC2-extra/psipred/runpsipred'
+psipred = '/proj/bioinfo/software/PconsC2-extra/psipred/bin/psipred'
 
 ### MATLAB executable ###
 # Please set this variable to None if you don't have access to matlab. 
 # PconsFold will then try to use the compiled version. 
 #matlab = '/sw/apps/matlab/x86_64/8.1/bin/matlab'
-#matlab = None
-matlab= '/pdc/vol/matlab/r2012a/bin/matlab'
+matlab = None
+#matlab= '/pdc/vol/matlab/r2012a/bin/matlab'
 
 ### Path to MATLAB compiler ###
 # Only needed if matlab is not available.
 matlabdir = '' 
 
 # Directory to PconsC3 scripts (i.e. this one)
-PconsC3 = '/scratch/arne/PconsC3/'
+PconsC3 = '/proj/bioinfo/software/PconsC3/'
 
 
 ########################################################
@@ -67,7 +69,8 @@ trim2jones = root + 'scripts/a3mToJones.py'
 trim2trimmed = root + 'scripts/a3mToTrimmed.py'
 
 # Reformat script scavenged from HHsuite. Please cite the HHblits paper!
-reformat = root + 'scripts/reformat.pl'
+#reformat = root + 'scripts/reformat.pl'
+reformat = '/proj/bioinfo/software/PconsC2-extra/hhsuite-2.0.16-linux-x86_64/scripts/reformat.pl'
 
 # Maximum amount of cores to use per default
 n_cores = multiprocessing.cpu_count()
