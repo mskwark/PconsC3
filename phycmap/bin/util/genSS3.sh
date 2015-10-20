@@ -13,7 +13,7 @@ RaptorX_HOME=/hd0/phycmap.release/bin
 ###### BY TINA, May 5, 2003
 BLASTPGP=$RaptorX_HOME/util/BLAST/bin/blastpgp
 MAKEMAT=$RaptorX_HOME/util/BLAST/bin/makemat
-BLASTDB=$RaptorX_HOME/databases/NR_new/nr90
+BLASTDB=$RaptorX_HOME/databases/NR_new/dummy_db
 PSIPREDDIR=$RaptorX_HOME/util/PSIPRED
 ###### BY TINA, May 5, 2003
 

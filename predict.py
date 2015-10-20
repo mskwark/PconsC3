@@ -14,7 +14,8 @@ maxtime = pow(10,6)
 # fraction of trees to use (prediction time scales linearly with the number of trees, 
 # while expected precision is roughly the same for values > 0.3
 
-treefraction = 1.0
+treedepth = 100
+treefraction = 1
 
 if len(sys.argv) != 10:
     print 'Usage: ' + sys.argv[0] + ' <files>'
@@ -26,19 +27,21 @@ if len(sys.argv) != 10:
     print ' SS file'
     print ' Alignment stats'
     print ' Alignment'
-    print ' Forrest Locations (eg /dev/shm/'
+    print ' Forest Locations (e.g. /dev/shm/)'
     print ' Outfile'
     sys.exit(1)
 
 files = sys.argv[1:]
-forestlocation = files[7]
+maxdepth = -1
 
-if not os.path.exists(forestlocation + '/tlayer0'):
-    forestlocation =  os.path.dirname(os.path.realpath(__file__))
+if maxdepth < 0:
+    forestlocation = files[7] + '/tlayer{:d}'
+else:
+    forestlocation = files[7] + '/tlayer{:d}-' + str(maxdepth)
 
 for i in range(5):
     abort = False
-    if not os.path.exists(forestlocation + '/tlayer{:d}/tree.list'.format(i)):
+    if not os.path.exists(forestlocation.format(i) + '/tree.list'.format(i)):
         sys.stderr.write('Forest data for layer {:d} is missing.\n'.format(i))
         abort = True
     if abort:
@@ -200,6 +203,8 @@ for index in range(3):
             score = float(x[c])
         contacts[index][(aa1, aa2)] = score
         contacts[index][(aa2, aa1)] = score
+        if not aa2 > aa1:
+            continue
         selected.add((aa1,aa2))
 
 clist = []
@@ -319,13 +324,16 @@ def predict(dir, X):
     random.shuffle(trees)
     trees = trees[:int(len(trees)*treefraction)]
     predictions = np.zeros(len(X))
-    start = time.time()
     count = 0
     allcount = len(trees)
     ccc = 0.
+    loadtime = 0.
+    start = time.time()
     for t in trees:
         try:
+            loadstart = time.time()
             t = joblib.load(dir + '/' + t.split('/')[-1])
+            loadtime += time.time() - loadstart
         except:
             continue
         for i in range(len(X)):
@@ -334,10 +342,11 @@ def predict(dir, X):
         count += 1
         sys.stderr.write('\rProgress: [' + '#' * (80*count/allcount) + ' ' * (80- (80*count)/allcount) + ']')
         now = time.time()
-        sys.stderr.write(' {:6.1f} trees/s. Time remaining: {:7.1f}s'.format( count/(now-start), min( (allcount-count) * (now-start)/count, maxtime-(now-start)) ))
+        sys.stderr.write(' {:6.1f} trees/s. Time remaining: {:7.1f}s ({:5.2f}%)'.format( count/(now-start), min( (allcount-count) * (now-start)/count, maxtime-(now-start)), 100*loadtime/(now-start) ))
         if now - start > maxtime:
             break
     predictions = predictions/count
+    print predictions
     return predictions
 
 def predict_tree(tree, q):
@@ -355,7 +364,7 @@ def predict_tree(tree, q):
 
 # first layer
 sys.stderr.write('\nPredicting base layer:\n')
-p = predict(forestlocation + '/tlayer0/', X)
+p = predict(forestlocation.format(0), X)
 of = open(outfile + '.l0', 'w')
 previouslayer = {} 
 
@@ -370,7 +379,7 @@ of.close()
 
 Xp = X
 Yp = selected
-for layer in range(1,5):
+for layer in range(1,2):
     X = []
     sys.stderr.write('\nPredicting convolution layer {:d}:\n'.format(layer))
     for p in range(len(Xp)):
@@ -384,7 +393,7 @@ for layer in range(1,5):
                     q.append(-3)
         X.append(q)
 
-    p = predict(forestlocation + '/tlayer{:d}/'.format(layer), X)
+    p = predict(forestlocation.format(layer), X)
 
     previouslayer = {}
     of = open(outfile + '.l{:d}'.format(layer), 'w')
