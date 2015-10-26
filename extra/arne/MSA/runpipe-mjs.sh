@@ -32,7 +32,7 @@ if [ $BLAST_CPU -gt 1 &> /dev/null ] ; then :
 else
     BLAST_CPU=1
 fi
-install_dir=/scratch/arne/PconsC2-extra/PhyCmap/phycmap.release/
+install_dir=/net/radon/hd0/phycmap.release
 #LD_LIBRARY_PATH=$LD_LIBRARY_PATH:$install_dir/bin
 export BIOPERL_DIR=$install_dir/bin/BioPerl-1.6.1/
 export PDBTOOLS_DIR=$install_dir/bin/pdbtools/
@@ -150,6 +150,6 @@ rm $currdir/$pdbid.rrunsort
 
 
 if [ "$currdir" != "$install_dir/test" ] ; then
-#rm -rf $workdir ;
+rm -rf $workdir ;
 fi
 
