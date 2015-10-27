@@ -53,11 +53,14 @@ seqbase=`basename $seqfile|sed -e s/\.seq$// |sed -e s/\.fa$// |sed -e s/\.fasta
 seqname=`basename  $seqfile`
 rootname=`echo $seqname | sed -E "s/\..*//"`
 cp $seqfile $workdir/
-rsync  *.ss2 *.rsa *.rr $workdir/
+
+rsync -q $rootname.gdca $rootname.0.02.plm20 $rootname.rr $SEQ.rsa $rootname.ss2 $rootname.gneff $rootname.trimmed $rootname.PconsC3* $workdir/
 cd $workdir
 
 #check if we have a muktiple sequence alignment or a single sequence
 numseq=`grep -c \> $seqname`
+print $numseq
+
 if [[ $numseq -gt 2 ]]
 then
 # First sequence needs to be trimmed
@@ -119,8 +122,8 @@ fi
 
 
 $PconsC3/predict.py $rootname.gdca $rootname.0.02.plm20 $rootname.rr $SEQ.rsa $rootname.ss2 $rootname.gneff $rootname.trimmed $rootname.PconsC3
-#rsync  *.ss *.l4 *.rsa *.rr *.gdca *.plm20 $currdir/
+rsync -q *.ss *.l4 *.l5 *.rsa *.rr *.gdca *.plm20 $currdir/
 
 # 
 cd $currdir
-#rm -rf $workdir
+rm -rf $workdir
