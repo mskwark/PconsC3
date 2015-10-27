@@ -38,9 +38,15 @@ use strict;
 
 my $ss_cit="PSIPRED: Jones DT. (1999) Protein secondary structure prediction based on position-specific scoring matrices. JMB 292:195-202.";
 
-# Hacks for NSC
-$execdir="/proj/bioinfo/software/PconsC2-extra/psipred/bin/";
-$datadir="/proj/bioinfo/software/PconsC2-extra/psipred/data/";
+# Hacks for NSC and HPC2N
+if ( -d "/proj/bioinfo/software/PconsC2-extra/"){
+    $execdir="/proj/bioinfo/software/PconsC2-extra/psipred/bin/";
+    $datadir="/proj/bioinfo/software/PconsC2-extra/psipred/data/";
+}elsif( -d "/pfs/nobackup/home/a/arnee/Software/PconsC2-extra/"){
+    $execdir="/pfs/nobackup/home/a/arnee/Software/PconsC2-extra/psipred/bin/";
+    $datadir="/pfs/nobackup/home/a/arnee/Software/PconsC2-extra/psipred/data/";
+    $ncbidir="/pfs/nobackup/home/a/arnee/Software/PconsC2-extra/blast-2.2.16/bin/";
+}
 
 # Module needed for aligning DSSP-sequence
 
