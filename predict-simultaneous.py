@@ -9,7 +9,7 @@ from multiprocessing.pool import ThreadPool
 from multiprocessing import Value, Array, Pool
 
 
-if len(sys.argv) != 10:
+if len(sys.argv) != 11:
     print 'Usage: ' + sys.argv[0] + ' <files>'
     print 'That is:'
     print ' GaussDCA prediction'
@@ -20,13 +20,14 @@ if len(sys.argv) != 10:
     print ' Alignment stats'
     print ' Alignment'
     print ' Forest location'
+    print ' MaxDepth'
     print ' Outfile'
     sys.exit(1)
 
 
 files = sys.argv[1:]
-
-maxdepth = -1
+maxdepth = files[8]
+# maxdepth = -1
 
 if maxdepth < 0:
     forestlocation = files[7] + '/tlayer{:d}'
@@ -229,7 +230,7 @@ if __name__ == '__main__':
 
     Y = []
     maxres = -1
-    outfile = files[8]
+    outfile = files[9]
     if os.path.exists(outfile):
         pass
 
@@ -414,7 +415,7 @@ if __name__ == '__main__':
 
     Xp = X
     Yp = selected
-    for layer in range(1,2):
+    for layer in range(1,6):
         X = []
         sys.stderr.write('\nPredicting convolution layer {:d}:\n'.format(layer))
         for p in range(len(Xp)):

@@ -17,7 +17,7 @@ maxtime = pow(10,6)
 treedepth = 100
 treefraction = 1
 
-if len(sys.argv) != 10:
+if len(sys.argv) != 11:
     print 'Usage: ' + sys.argv[0] + ' <files>'
     print 'That is:'
     print ' GaussDCA prediction'
@@ -28,11 +28,13 @@ if len(sys.argv) != 10:
     print ' Alignment stats'
     print ' Alignment'
     print ' Forest Locations (e.g. /dev/shm/)'
+    print ' MaxDepth'
     print ' Outfile'
     sys.exit(1)
 
 files = sys.argv[1:]
-maxdepth = -1
+#maxdepth = -1
+maxdepth = files[8]
 
 if maxdepth < 0:
     forestlocation = files[7] + '/tlayer{:d}'
@@ -151,7 +153,7 @@ contacts = {}
 X = []
 Y = []
 maxres = -1
-outfile = files[8]
+outfile = files[9]
 
 
 if os.path.exists(outfile):
@@ -379,7 +381,7 @@ of.close()
 
 Xp = X
 Yp = selected
-for layer in range(1,2):
+for layer in range(1,6):
     X = []
     sys.stderr.write('\nPredicting convolution layer {:d}:\n'.format(layer))
     for p in range(len(Xp)):
