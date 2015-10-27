@@ -60,7 +60,6 @@ cd $workdir
 
 #check if we have a muktiple sequence alignment or a single sequence
 numseq=`grep -c \> $seqname`
-print $numseq
 
 if [[ $numseq -gt 2 ]]
 then
@@ -123,7 +122,7 @@ fi
 
 
 $PconsC3/predict.py $rootname.gdca $rootname.0.02.plm20 $rootname.rr $SEQ.rsa $rootname.ss2 $rootname.gneff $rootname.trimmed $rootname.PconsC3
-rsync -q *.ss *.l4 *.l5 *.rsa *.rr *.gdca *.plm20 $currdir/
+rsync -q *.ss *.l4 *.l5 *.rsa *.rr *.gdca *.plm20 *gneff $currdir/
 
 # 
 cd $currdir

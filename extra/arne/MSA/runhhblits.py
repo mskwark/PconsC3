@@ -13,6 +13,7 @@ def check_output(command):
 
 sys.stderr.write('\nTesting dependencies...\n')
 
+
 ### Check HHblits ###
 try:
     f = open(os.devnull, "w")
@@ -36,7 +37,7 @@ if '-c' in sys.argv:
     del sys.argv[idx]
     del sys.argv[idx]
 else:
-    n_cores = 1
+    n_cores = 4
 
 if '-e' in sys.argv:
     idx = sys.argv.index('-e')
