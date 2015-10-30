@@ -19,8 +19,8 @@ export PATH=$PATH:$HOME/git/PconsC3/
 
 # export PATH=$PATH:/scratch/arne/PconsC3/bin/../dependencies/hhsuite-2.0.16-linux-x86_64/bin:/scratch/arne/PconsC3/bin/../dependencies/hhsuite-2.0.16-linux-x86_64_patch/bin:/scratch/arne/PconsC3/bin/../dependencies/netsurfp-1.0/bin:/scratch/arne/PconsC3/bin/../dependencies/phycmap.release/bin:/scratch/arne/PconsC3/bin/../dependencies/psipred/bin:/scratch/arne/PconsC3/bin/../dependencies/blast:/scratch/arne/PconsC3/bin/../dependencies/cd-hit-v4.5.4-2011-03-07:/scratch/arne/PconsC3/bin/../dependencies/hhsuite-2.0.16-linux-x86_64:/scratch/arne/PconsC3/bin/../dependencies/hhsuite-2.0.16-linux-x86_64_patch:/scratch/arne/PconsC3/bin/../dependencies/hmmer-3.1b2-linux-intel-x86_64:/scratch/arne/PconsC3/bin/../dependencies/netsurfp-1.0:/scratch/arne/PconsC3/bin/../dependencies/phycmap.release:/scratch/arne/PconsC3/bin/../dependencies/plmDCA_asymmetric_v2:/scratch/arne/PconsC3/bin/../dependencies/psipred
 
-bin="/proj/bioinfo/users/x_arnel/contactpreds/chaperonin/bin/"
-PconsC3="/proj/bioinfo/software/PconsC3/"
+bin=$HOME/contactpreds/chaperonin/bin/
+PconsC3=$HOME/git/PconsC3/
 #HHLIB=/scratch/arne/PconsC2-extra/hhsuite-2.0.16-linux-x86_64/lib/hh/
 #export HHLIB=/usr/local/lib/hh/
 #export HHLIB=/software/apps/hhsuite/2.0.16/gcc01/hhsuite-2.0.16
@@ -60,7 +60,6 @@ cd $workdir
 
 #check if we have a muktiple sequence alignment or a single sequence
 numseq=`grep -c \> $seqname`
-print $numseq
 
 if [[ $numseq -gt 2 ]]
 then
@@ -123,7 +122,7 @@ fi
 
 
 $PconsC3/predict.py $rootname.gdca $rootname.0.02.plm20 $rootname.rr $SEQ.rsa $rootname.ss2 $rootname.gneff $rootname.trimmed $rootname.PconsC3
-rsync -q *.ss *.l4 *.l5 *.rsa *.rr *.gdca *.plm20 $currdir/
+rsync -q *.ss *.l4 *.l5 *.rsa *.rr *.gdca *.plm20 *gneff $currdir/
 
 # 
 cd $currdir
