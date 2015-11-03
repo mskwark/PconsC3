@@ -5,7 +5,7 @@ import sys, os, re
 infilef = sys.argv[1]
 infile = open(infilef)
 
-cutoff=0.90
+cutoff=0.75
 counter = 0
 for l in infile:
     if '>' in l and not counter == 0:
