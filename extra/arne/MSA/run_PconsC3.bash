@@ -126,4 +126,4 @@ rsync -q *.ss *.l4 *.l5 *.rsa *.rr *.gdca *.plm20 *gneff $currdir/
 
 # 
 cd $currdir
-rm -rf $workdir
+#rm -rf $workdir
