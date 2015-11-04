@@ -29,5 +29,5 @@ for l in infile:
         upperseq = ''.join([c for c in l if not c.islower()])
         upperseq = upperseq.replace('X', '-')
         length=len(upperseq)
-
+        sys.stdout.write(upperseq)
 sys.stdout.write('\n')
