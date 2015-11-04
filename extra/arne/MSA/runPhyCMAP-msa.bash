@@ -131,7 +131,7 @@ rm $a3mfile
 cp $currdir/$msafile $a3mfile
 
 ${bindir}/reformat.pl -r -noss $a3mfile $a3mfile.fasta &> $workdir/reformat.log
-touch $pdbid.rr
+touch $pdbid.r2r
 #compute the tgt file and a2m file
 #copy raptorx2:/home/majianzhu/LRR/CNFsearch and setup it!
 a2mfile="$pdbid.a2m"
@@ -177,24 +177,24 @@ ls -l
 
 #ls -l $bindir/rrr-new.pl  $moreevfile  $PDBTOOLS_DIR    $pdbid  $tgtfile $workdir/$pdbid.epadca.prob  $workdir/$pdbid.epadcb.prob  $bpsfile  $mifile  $tempoutfile  $rfpredfile  $bindir/model_rf379_24up_cb_new    $pdbid.rout
 
-sleep 60
+#sleep 60
 
 $bindir/rrr.pl -evfile $moreevfile -lib $PDBTOOLS_DIR   -pdb $pdbid  -act predict  -tpl $tgtfile -epadca $workdir/$pdbid.epadca.prob -epadcb $workdir/$pdbid.epadcb.prob -bps $bpsfile -mi $mifile -out $tempoutfile -outfile $rfpredfile -modelFile $bindir/model_rf379_24up_cb_new  -r_exe `which R`  -methodStr rf379 -featureSetStr 3:379  -Routputfile $pdbid.rout  &> $workdir/r.stdout 
 
-cat $pdbid.rout
-
-sleep 60
-
-$bindir/rrr-new.pl -evfile $moreevfile -lib $PDBTOOLS_DIR   -pdb $pdbid  -act predict  -tpl $tgtfile -epadca $workdir/$pdbid.epadca.prob -epadcb $workdir/$pdbid.epadcb.prob -bps $bpsfile -mi $mifile -out $tempoutfile -outfile $rfpredfile -modelFile $bindir/model_rf379_24up_cb_new  -r_exe `which R`  -methodStr rf379 -featureSetStr 3:379  -Routputfile $pdbid.new.rout  &> $workdir/r-new.stdout 
-
-cat $pdbid.new.rout
-
-sleep 60
-
-$bindir/rrr-org.pl -evfile $moreevfile -lib $PDBTOOLS_DIR   -pdb $pdbid  -act predict  -tpl $tgtfile -epadca $workdir/$pdbid.epadca.prob -epadcb $workdir/$pdbid.epadcb.prob -bps $bpsfile -mi $mifile -out $tempoutfile -outfile $rfpredfile -modelFile $bindir/model_rf379_24up_cb_new  -r_exe `which R`  -methodStr rf379 -featureSetStr 3:379  -Routputfile $pdbid.org.rout  &> $workdir/r-org.stdout 
-
-cat $pdbid.org.rout
-
+# cat $pdbid.rout
+# 
+# sleep 60
+# 
+# $bindir/rrr-new.pl -evfile $moreevfile -lib $PDBTOOLS_DIR   -pdb $pdbid  -act predict  -tpl $tgtfile -epadca $workdir/$pdbid.epadca.prob -epadcb $workdir/$pdbid.epadcb.prob -bps $bpsfile -mi $mifile -out $tempoutfile -outfile $rfpredfile -modelFile $bindir/model_rf379_24up_cb_new  -r_exe `which R`  -methodStr rf379 -featureSetStr 3:379  -Routputfile $pdbid.new.rout  &> $workdir/r-new.stdout 
+# 
+# cat $pdbid.new.rout
+# 
+# sleep 60
+# 
+# $bindir/rrr-org.pl -evfile $moreevfile -lib $PDBTOOLS_DIR   -pdb $pdbid  -act predict  -tpl $tgtfile -epadca $workdir/$pdbid.epadca.prob -epadcb $workdir/$pdbid.epadcb.prob -bps $bpsfile -mi $mifile -out $tempoutfile -outfile $rfpredfile -modelFile $bindir/model_rf379_24up_cb_new  -r_exe `which R`  -methodStr rf379 -featureSetStr 3:379  -Routputfile $pdbid.org.rout  &> $workdir/r-org.stdout 
+# 
+# cat $pdbid.org.rout
+# 
 #if [ $? -ne 0 ] ;then echo "ERR7 $error_rrr" ; exit -1 ;fi
 
 echo "PhyCMAP: Computing the contact map with constraints..."
@@ -206,17 +206,18 @@ if [ $? -ne 0 ] ;then echo "ERR8 $error_ilp" ; exit -1 ;fi
 cp $workdir/$pdbid.rr $currdir/$pdbid.rrunsort
 (head -n5 $currdir/$pdbid.rrunsort ; tail -n +6 $currdir/$pdbid.rrunsort |sort -n -r -k5 ) > $pdbid.rr
  
-$bindir/rr_format.sh $pdbid.rr > $pdbid.rr2 
-mv $pdbid.rr2  $currdir/$pdbid.rr
+$bindir/rr_format.sh $pdbid.rr > $pdbid.r2r 
+mv $pdbid.r2r  $currdir/$pdbid.r2r
 #rm $currdir/$pdbid.rrunsort
 
 
 if [ "$currdir" != "$install_dir/test" ] ; then
-#rm -rf $workdir ;
+rm -rf $workdir ;
+fi
+
 cd $currdir
 rm $newseqfile;
 rm $newmsafile;
-mv $seqbase.rr $oldseqbase.rr
-mv $seqbase.rrunsort $oldseqbase.rrunsort
-fi
+mv $seqbase.r2r $oldseqbase.r2r
+mv $seqbase.rrunsort $oldseqbase.r2runsort
 

@@ -15,12 +15,13 @@ workdir=$2 # Optional: Working directory
 #
 # A few variables to set.
 #make sure everything is in the path
-export PATH=$PATH:$HOME/git/PconsC3/
+export PATH=$PATH:$HOME/git/PconsC3/:/pfs/nobackup/home/a/arnee/git/
 
 # export PATH=$PATH:/scratch/arne/PconsC3/bin/../dependencies/hhsuite-2.0.16-linux-x86_64/bin:/scratch/arne/PconsC3/bin/../dependencies/hhsuite-2.0.16-linux-x86_64_patch/bin:/scratch/arne/PconsC3/bin/../dependencies/netsurfp-1.0/bin:/scratch/arne/PconsC3/bin/../dependencies/phycmap.release/bin:/scratch/arne/PconsC3/bin/../dependencies/psipred/bin:/scratch/arne/PconsC3/bin/../dependencies/blast:/scratch/arne/PconsC3/bin/../dependencies/cd-hit-v4.5.4-2011-03-07:/scratch/arne/PconsC3/bin/../dependencies/hhsuite-2.0.16-linux-x86_64:/scratch/arne/PconsC3/bin/../dependencies/hhsuite-2.0.16-linux-x86_64_patch:/scratch/arne/PconsC3/bin/../dependencies/hmmer-3.1b2-linux-intel-x86_64:/scratch/arne/PconsC3/bin/../dependencies/netsurfp-1.0:/scratch/arne/PconsC3/bin/../dependencies/phycmap.release:/scratch/arne/PconsC3/bin/../dependencies/plmDCA_asymmetric_v2:/scratch/arne/PconsC3/bin/../dependencies/psipred
 
 bin=$HOME/git/PconsC3/extra/arne/MSA/
 PconsC3=$HOME/git/PconsC3/
+
 #HHLIB=/scratch/arne/PconsC2-extra/hhsuite-2.0.16-linux-x86_64/lib/hh/
 #export HHLIB=/usr/local/lib/hh/
 #export HHLIB=/software/apps/hhsuite/2.0.16/gcc01/hhsuite-2.0.16
@@ -54,6 +55,7 @@ seqbase=`basename $seqfile|sed -e s/\.seq$// |sed -e s/\.fa$// |sed -e s/\.fasta
 seqname=`basename  $seqfile`
 rootname=`echo $seqname | sed -E "s/\..*//"`
 cp $seqfile $workdir/
+
 
 rsync -q $rootname.gdca $rootname.0.02.plm20 $rootname.rr $SEQ.rsa $SEQ.rsa $rootname.ss2 $rootname.gneff $rootname.trimmed $rootname.PconsC3* $workdir/
 cd $workdir
@@ -121,9 +123,9 @@ fi
 # and now run PconsC3
 
 
+
 $PconsC3/predict.py $rootname.gdca $rootname.0.02.plm20 $rootname.rr $SEQ.fasta.rsa $rootname.ss2 $rootname.gneff $rootname.trimmed $PconsC3/ 5 $rootname.PconsC3
 rsync -q *.ss2 *.ss *.l4 *.l5 *.rsa *.rr *.gdca *.plm20 *gneff *.a3m *.trimmed $currdir/
-
 # 
 cd $currdir
 #rm -rf $workdir

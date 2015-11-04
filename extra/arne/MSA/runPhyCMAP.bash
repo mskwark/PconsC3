@@ -173,7 +173,7 @@ $bindir/rr_format.sh $pdbid.rr > $pdbid.rr2
 mv $pdbid.rr2  $currdir/$pdbid.rr
 #rm $currdir/$pdbid.rrunsort
 
-
+cd $currdir
 if [ "$currdir" != "$install_dir/test" ] ; then
 rm -rf $workdir ;
 fi
