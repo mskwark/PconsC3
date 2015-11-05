@@ -25,6 +25,12 @@ PconsC3=$HOME/git/PconsC3/
 #HHLIB=/scratch/arne/PconsC2-extra/hhsuite-2.0.16-linux-x86_64/lib/hh/
 #export HHLIB=/usr/local/lib/hh/
 #export HHLIB=/software/apps/hhsuite/2.0.16/gcc01/hhsuite-2.0.16
+if [ ! -e $HHLIB ] 
+then
+    "ERROR HHLIB not defined correctly $HHLIB" 
+    exit $?  
+fi
+
 
 
 # ----------
@@ -90,7 +96,6 @@ fi
 # Predict secondary structure (Could perhaps be replaces by SSPRO but format is not the same)
 if [ ! -s $rootname.ss2 ]
 then
-    export HHLIB="/proj/bioinfo/software/PconsC2-extra/hhsuite-2.0.16/"
     $bin/addss.pl $ALN $ALN.addss -fas 
 fi
 # Surface are prediction Run Netsurfp (could perhaps be replace by SSPRO)
