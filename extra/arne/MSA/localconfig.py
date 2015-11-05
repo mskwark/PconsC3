@@ -14,11 +14,11 @@ if __name__ == '__main__':
 
 # Directory where PconsC in the distributable package is located
 #root = os.path.dirname(os.path.abspath(sys.argv[0])) + '/'
-root = home +'/git/PconsC3//'
-print root
+#root = home +'/git/PconsC3//'
+#print root
 
 # Directory to PconsC3 (i.e. this one)
-PconsC3 = root + '../'
+PconsC3 = home +'/git/PconsC3//'
 
 ########################################################
 ### Please adjust the following paths to your system ###
@@ -26,6 +26,7 @@ PconsC3 = root + '../'
 
 if os.path.exists("/proj/bioinfo/"):
     print " We are at triolith"
+    root = "/proj/bioinfo/software/PconsC2-extra/hhsuite-2.0.16/"
 ### Jackhmmer executable ###
 #jackhmmer = root + 'dependencies/hmmer-3.0/src/jackhmmer'
     jackhmmer = '/proj/bioinfo/software/PconsC2-extra/hmmer-3.1b1-linux-intel-x86_64/binaries/jackhmmer'
@@ -64,8 +65,12 @@ if os.path.exists("/proj/bioinfo/"):
 # Directory to PconsC3 scripts (i.e. this one)
     PconsC3 = '/proj/bioinfo/software/PconsC3/'
 
+
+
+
 elif os.path.exists("/pfs/nobackup/home/"):
     print "We are at HPC2N"
+    root = "/pfs/nobackup/home/a/arnee/Software/PconsC2-extra/hhsuite-2.0.16-linux-x86_64/"
 ### Jackhmmer executable ###
 #jackhmmer = root + 'dependencies/hmmer-3.0/src/jackhmmer'
     jackhmmer = '/home/a/arnee/bin/jackhmmer'
@@ -113,8 +118,8 @@ trim2jones = root + 'scripts/a3mToJones.py'
 trim2trimmed = root + 'scripts/a3mToTrimmed.py'
 
 # Reformat script scavenged from HHsuite. Please cite the HHblits paper!
-#reformat = root + 'scripts/reformat.pl'
-reformat = '/pfs/nobackup/home/a/arnee/Software/PconsC2-extra/hhsuite-2.0.16-linux-x86_64/scripts/reformat.pl'
+reformat = root + 'scripts/reformat.pl'
+#reformat = '/pfs/nobackup/home/a/arnee/Software/PconsC2-extra/hhsuite-2.0.16-linux-x86_64/scripts/reformat.pl'
 
 # Maximum amount of cores to use per default
 n_cores = multiprocessing.cpu_count()
