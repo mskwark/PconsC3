@@ -16,7 +16,7 @@ if not julia:
 
 print "Using: ",julia
 
-cpus = multiprocessing.cpu_count()
+cpus = min(8,multiprocessing.cpu_count())
 
 alignment = sys.argv[1]
 
