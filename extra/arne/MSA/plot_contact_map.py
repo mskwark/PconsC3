@@ -395,6 +395,7 @@ def plot_map(fasta_filename, c_filename, factor=1.0, th=-1, c2_filename='', psip
 
     ### plot reference contacts in the background if given
     if pdb_filename:
+        chain='*'
         print "TEST (pdb_filename == TRUE)"
         res_lst = parse_pdb.get_coordinates(open(pdb_filename, 'r'), chain)
 #        cb_lst = parse_pdb.get_ca_coordinates(open(pdb_filename, 'r'), chain)
