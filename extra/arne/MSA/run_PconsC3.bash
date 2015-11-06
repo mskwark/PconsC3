@@ -129,7 +129,7 @@ fi
 
 
 
-$PconsC3/predict.py $rootname.gdca $rootname.0.02.plm20 $rootname.rr $SEQ.fasta.rsa $rootname.ss2 $rootname.gneff $rootname.trimmed $PconsC3/ 5 $rootname.PconsC3
+$PconsC3/predict.py $rootname.gdca $rootname.0.02.plm20 $rootname.rr $SEQ.rsa $rootname.ss2 $rootname.gneff $rootname.trimmed $PconsC3/ 5 $rootname.PconsC3
 rsync -q *.ss2 *.ss *.l4 *.l5 *.rsa *.rr *.gdca *.plm20 *gneff *.a3m *.trimmed $currdir/
 # 
 cd $currdir
