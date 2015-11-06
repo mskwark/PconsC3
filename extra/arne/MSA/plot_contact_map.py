@@ -397,6 +397,8 @@ def plot_map(fasta_filename, c_filename, factor=1.0, th=-1, c2_filename='', psip
     if pdb_filename:
         chain='*'
         print "TEST (pdb_filename == TRUE)"
+        chain='*'
+        # We try to get all chains...
         res_lst = parse_pdb.get_coordinates(open(pdb_filename, 'r'), chain)
 #        cb_lst = parse_pdb.get_ca_coordinates(open(pdb_filename, 'r'), chain)
         cb_lst = parse_pdb.get_cb_coordinates(open(pdb_filename, 'r'), chain)
@@ -415,6 +417,7 @@ def plot_map(fasta_filename, c_filename, factor=1.0, th=-1, c2_filename='', psip
         gapped_cb_lst = []
 
         for i in xrange(len(atom_seq_ali)):
+#            print i,j
             if atom_seq_ali[i] == '-':
                 gapped_res_lst.append('-')
                 gapped_cb_lst.append('-')
