@@ -396,15 +396,14 @@ def plot_map(fasta_filename, c_filename, factor=1.0, th=-1, c2_filename='', psip
     ### plot reference contacts in the background if given
     if pdb_filename:
         chain='*'
-        print "TEST (pdb_filename == TRUE)"
-        chain='*'
         # We try to get all chains...
         res_lst = parse_pdb.get_coordinates(open(pdb_filename, 'r'), chain)
 #        cb_lst = parse_pdb.get_ca_coordinates(open(pdb_filename, 'r'), chain)
         cb_lst = parse_pdb.get_cb_coordinates(open(pdb_filename, 'r'), chain)
         atom_seq = parse_pdb.get_atom_seq(open(pdb_filename, 'r'), chain)
                 
-        align = pairwise2.align.globalms(atom_seq, seq, 2, -1, -0.5, -0.1)
+#        align = pairwise2.align.globalms(atom_seq, seq, 2, -1, -0.5, -0.1)
+        align = pairwise2.align.globalms(atom_seq, seq, 2, -1, -10.5, -10.1)
 
         atom_seq_ali = align[-1][0]
         seq_ali = align[-1][1]
@@ -451,7 +450,7 @@ def plot_map(fasta_filename, c_filename, factor=1.0, th=-1, c2_filename='', psip
         img = get_colors(contacts_np, ref_contact_map=dist_mat, atom_seq_ali=atom_seq_ali, th=th)
         sc = ax.imshow(img, interpolation='none')
    
-        print '%s %s %s %s' % (acc, PPVs[-1], TPs[-1], FPs[-1])
+        print 'PPV: %s %s %s %s' % (acc, PPVs[-1], TPs[-1], FPs[-1])
       
         cmap = cm.get_cmap("binary")
         cmap.set_bad([1,1,1,0])
@@ -518,7 +517,7 @@ def plot_map(fasta_filename, c_filename, factor=1.0, th=-1, c2_filename='', psip
     else:
 #        print "TEST3 ELSE"
         if pdb_filename:
-            print "TEST3 pdb_filename=TRUE"
+#            print "TEST3 pdb_filename=TRUE"
             pdb_acc = parse_pdb.get_acc(open(pdb_filename))
             if pdb_acc:
                 if chain:
