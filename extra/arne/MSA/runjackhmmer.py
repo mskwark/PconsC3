@@ -60,7 +60,7 @@ if '-name' in sys.argv:
     del sys.argv[idx]
     del sys.argv[idx]
 else:
-    name = str(evalue)
+    name = 'JH'+str(evalue)
 
 
 if len(sys.argv) != 2:
