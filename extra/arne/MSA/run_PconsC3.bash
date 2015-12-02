@@ -60,6 +60,7 @@ done
 seqbase=`basename $seqfile|sed -e s/\.seq$// |sed -e s/\.fa$// |sed -e s/\.fasta$//|sed -e s/\.trimmed$//   `;
 seqname=`basename  $seqfile`
 #rootname=`echo $seqname | sed -E "s/\..*//"`
+rootname=$seqbase
 cp $seqfile $workdir/
 
 
