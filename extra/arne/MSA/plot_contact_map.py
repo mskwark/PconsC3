@@ -233,9 +233,69 @@ def get_meff_coverage(meff_file):
                 meff_lst = map(float, meff_lst)
     return meff_lst
 
+def contactanalysis(fasta_filename, c_filename, factor=1.0, cutoff=9999.99, th=-1, c2_filename='', psipred_horiz_fname='', psipred_vert_fname='', pdb_filename='', is_heavy=False, chain='', sep=',', outfilename='', ali_filename='',  meff_filename='', name='', start=0, end=-1): 
+    #acc = c_filename.split('.')[0]
+    #acc = fasta_filename.split('.')[0][:4]
+    if name == '': 
+        acc = '.'.join(os.path.basename(fasta_filename).split('.')[:-1])
+    else:
+        acc = name
+    ### get sequence
+    seq = parse_fasta.read_fasta(open(fasta_filename, 'r')).values()[0][0]
+    ref_len = len(seq)
 
-def plot_map(fasta_filename, c_filename, factor=1.0, th=-1, c2_filename='', psipred_horiz_fname='', psipred_vert_fname='', pdb_filename='', is_heavy=False, chain='', sep=',', outfilename='', ali_filename='',  meff_filename='', name='', start=0, end=-1):  
-  
+    ### trim sequence according to given positions
+    ### default: take full sequence
+    if end == -1:
+        end = ref_len
+    seq = seq[start:end]
+    ref_len = len(seq)
+    unit = (ref_len/50.0)
+    ### get sequence
+    seq = parse_fasta.read_fasta(open(fasta_filename, 'r')).values()[0][0]
+    ref_len = len(seq)
+
+
+    ### seq top "factor" * "ref_len" predicted contacts
+    contacts = parse_contacts.parse(open(c_filename, 'r'), sep)
+    contacts_np = parse_contacts.get_numpy_cmap(contacts)
+    contacts_np = contacts_np[start:end,start:end]
+    contacts_x = []
+    contacts_y = []
+    scores = []
+    contact_dict = {}
+
+    count = 0
+    highscore = 0
+    for i in range(len(contacts)):
+        score = contacts[i][0]
+        c_x = contacts[i][1] - 1
+        c_y = contacts[i][2] - 1
+        # only look at contacts within given range
+        # default: take full sequence range into account
+        if c_x < start or c_x >= end:
+            continue
+        if c_y < start or c_y >= end:
+            continue
+        pos_diff = abs(c_x - c_y)
+        too_close = pos_diff < 5
+
+        if not too_close:
+            contacts_x.append(c_x - start)
+            contacts_y.append(c_y - start)
+            scores.append(score)
+            count += 1
+            if score > cutoff:
+                highscore += 1
+
+#    if outfilename:
+#        out
+#    else:
+#        outfile=%S
+    print "STATistics",highscore,ref_len #,highscore.float/ref_len.float
+
+
+def plot_map(fasta_filename, c_filename, factor=1.0, cutoff=9999.99, th=-1, c2_filename='', psipred_horiz_fname='', psipred_vert_fname='', pdb_filename='', is_heavy=False, chain='', sep=',', outfilename='', ali_filename='',  meff_filename='', name='', start=0, end=-1):  
     #acc = c_filename.split('.')[0]
     #acc = fasta_filename.split('.')[0][:4]
     if name == '': 
@@ -288,7 +348,7 @@ def plot_map(fasta_filename, c_filename, factor=1.0, th=-1, c2_filename='', psip
             scores.append(score)
             count += 1
            
-        if count >= ref_len * factor:
+        if (count >= ref_len * factor) or score < cutoff:
         #if score < th:
             if th == -1:
                 th = score
@@ -591,6 +651,7 @@ if __name__ == "__main__":
     p.add_argument('contact_file')#, required=True)
     p.add_argument('-o', '--outfile', default='')
     p.add_argument('-f', '--factor', default=1.0, type=float)
+    p.add_argument('-c', '--cutoff', default=0.3, type=float)
     p.add_argument('-t', '--threshold', default=-1, type=float)
     p.add_argument('--c2', default='')
     p.add_argument('--psipred_horiz', default='')
@@ -619,5 +680,6 @@ if __name__ == "__main__":
     else:
         sep = '\t'
     
-    plot_map(args['fasta_file'], args['contact_file'], factor=args['factor'], th=args['threshold'], c2_filename=args['c2'], psipred_horiz_fname=args['psipred_horiz'], psipred_vert_fname=args['psipred_vert'], pdb_filename=args['pdb'], is_heavy=args['heavy'], chain=args['chain'], sep=sep, outfilename=args['outfile'], ali_filename=args['alignment'], meff_filename=args['meff'], name=args['name'], start=args['start'], end=args['end'])
+    plot_map(args['fasta_file'], args['contact_file'], factor=args['factor'], cutoff=args['cutoff'], th=args['threshold'], c2_filename=args['c2'], psipred_horiz_fname=args['psipred_horiz'], psipred_vert_fname=args['psipred_vert'], pdb_filename=args['pdb'], is_heavy=args['heavy'], chain=args['chain'], sep=sep, outfilename=args['outfile'], ali_filename=args['alignment'], meff_filename=args['meff'], name=args['name'], start=args['start'], end=args['end'])
 
+    contactanalysis(args['fasta_file'], args['contact_file'], factor=args['factor'], cutoff=args['cutoff'], th=args['threshold'], c2_filename=args['c2'], psipred_horiz_fname=args['psipred_horiz'], psipred_vert_fname=args['psipred_vert'], pdb_filename=args['pdb'], is_heavy=args['heavy'], chain=args['chain'], sep=sep, outfilename=args['outfile'], ali_filename=args['alignment'], meff_filename=args['meff'], name=args['name'], start=args['start'], end=args['end'])
