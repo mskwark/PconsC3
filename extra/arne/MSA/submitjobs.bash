@@ -18,8 +18,3 @@ do
     fi
 done
 
-
-
-#!/bin/bash -x
-
-for i in *.fa
