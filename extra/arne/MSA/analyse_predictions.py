@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from __future__ import division
 import sys, os, re, string
 import argparse
 from math import *
@@ -25,6 +26,7 @@ sys.path.append(home + '/git/bioinfo-toolbox/parsing')
 import parse_contacts
 import parse_psipred
 import parse_fasta
+import parse_iupred
 import parse_pdb
 
 
@@ -233,8 +235,19 @@ def get_meff_coverage(meff_file):
                 meff_lst = map(float, meff_lst)
     return meff_lst
 
+            
+#    if outfilename:
+#        out
+#    else:
+#        outfile=%S
 
-def plot_map(fasta_filename, c_filename, factor=1.0, cutoff=9999.99, th=-1, c2_filename='', psipred_horiz_fname='', psipred_vert_fname='', pdb_filename='', is_heavy=False, chain='', sep=',', outfilename='', ali_filename='',  meff_filename='', name='', start=0, end=-1):  
+    #    ax = fig.add_subplot(111)#, aspect='auto')
+    #    ax.set_adjustable('box-forced')
+    #    ax.tick_params(direction='out', right='off', top='off')
+    #    ax.set_xlim([-unit,ref_len])
+    #    ax.set_ylim([-unit,ref_len])
+
+def contactanalysis(fasta_filename, c_filename, factor=1.0, cutoff=9999.99, th=-1, c2_filename='', psipred_horiz_fname='', psipred_vert_fname='',iupred_fname='', pdb_filename='', is_heavy=False, chain='', sep=',', outfilename='', ali_filename='',  meff_filename='', name='', start=0, end=-1):  
     #acc = c_filename.split('.')[0]
     #acc = fasta_filename.split('.')[0][:4]
     if name == '': 
@@ -254,18 +267,45 @@ def plot_map(fasta_filename, c_filename, factor=1.0, cutoff=9999.99, th=-1, c2_f
     ref_len = len(seq)
     unit = (ref_len/50.0)
 
+    if ali_filename:
+        coverage_lst = get_ali_coverage(ali_filename)
+        max_cover = max(coverage_lst)
+    elif meff_filename:
+        coverage_lst = get_meff_coverage(meff_filename)
+        max_cover = max(coverage_lst)
+    else:
+        max_cover = 0
+    average_disorder=0.
+    fraction_disorer=0.
+    if iupred_fname:
+        disorder = parse_iupred.pred(open(iupred_fname, 'r'))
+    else:
+        disorder=np.zeros(ref_len)
+    average_disorder = np.sum(disorder)/ref_len
+    fraction_disorder = np.sum(disorder > 0.5)/ref_len
 
+    print average_disorder,fraction_disorder,np.where(disorder > 0.5),ref_len
+    foo=np.where(disorder > 0.5)
+    print foo
     ### get top "factor" * "ref_len" predicted contacts
-    contacts = parse_contacts.parse(open(c_filename, 'r'), sep)
+    contacts = parse_contacts.parse(open(c_filename, 'r'), sep,1)
     contacts_np = parse_contacts.get_numpy_cmap(contacts)
     contacts_np = contacts_np[start:end,start:end]
 
     contacts_x = []
     contacts_y = []
     scores = []
+    tooclose = []    
     contact_dict = {}
 
     count = 0
+    highscore = 0
+    numbins=20
+    sum=0.0
+    average=0.0
+    histo=np.zeros(numbins)
+    print disorder
+    print disorder[1]
     for i in range(len(contacts)):
         score = contacts[i][0]
         c_x = contacts[i][1] - 1
@@ -280,118 +320,41 @@ def plot_map(fasta_filename, c_filename, factor=1.0, cutoff=9999.99, th=-1, c2_f
         
         pos_diff = abs(c_x - c_y)
         too_close = pos_diff < 5
-
+        disosum=0.
+        disocount=0
         if not too_close:
-            contacts_x.append(c_x - start)
-            contacts_y.append(c_y - start)
-            scores.append(score)
-            count += 1
-           
-        if (count >= ref_len * factor) or score < cutoff:
-        #if score < th:
-            if th == -1:
-                th = score
-            break
- 
-
-    ### start plotting
-    fig = plt.figure(figsize=(8, 8), dpi=96, facecolor='w')
-    ax = fig.add_subplot(111)#, aspect='auto')
-    ax.set_adjustable('box-forced')
-    ax.tick_params(direction='out', right='off', top='off')
-    ax.set_xlim([-unit,ref_len])
-    ax.set_ylim([-unit,ref_len])
-    
-    ### plot alignment coverage if alignemnt given
-    if ali_filename or meff_filename:
-        # adjust overall canvas  
-        ax = plt.subplot2grid((8,8), (1, 1), colspan=7, rowspan=7)#, aspect='auto')
-        #ax.set_adjustable('box-forced')
-        #ax.set_autoscale_on(False) 
-        ax.autoscale(False)
-        ax.tick_params(direction='out',labelleft='off', right='off', top='off')
-        ax.set_xlim([-unit,ref_len])
-        ax.set_ylim([-unit,ref_len])
-
-        if ali_filename:
-            coverage_lst = get_ali_coverage(ali_filename)
-        elif meff_filename:
-            coverage_lst = get_meff_coverage(meff_filename)
-        max_cover = max(coverage_lst)
-
-        #lt = pow(10, max(1,floor(log10(max_cover)) - 1))
-        #upper = int(ceil(max_cover/float(lt)) * lt)
-        ax2 = plt.subplot2grid((8,8), (1,0), rowspan=7, sharey=ax)
-        #ax2.set_adjustable('box-forced')
-        #ax2.set_autoscale_on(False) 
-        ax2.autoscale(False)
-        #print len([0]+coverage_lst+[0])
-        #print len([0]+range(ref_len)+[ref_len-1])
-
-        ax2.plot([0]+coverage_lst+[0], [0]+range(ref_len)+[ref_len-1], 'k', lw=0)
-        ax2.axvline(x=max_cover*0.25, lw=0.5, c='black', ls=':')
-        ax2.axvline(x=max_cover*0.5, lw=0.5, c='black', ls=':')
-        ax2.axvline(x=max_cover*0.75, lw=0.5, c='black', ls=':')
-        ax2.fill([0]+coverage_lst+[0], [0]+range(ref_len)+[ref_len-1], facecolor='gray', lw=0, alpha=0.5)
-        ax2.set_xticks([0, max_cover])
-        ax2.tick_params(axis='x', top='off', direction='out')
-        ax2.invert_xaxis()
-        #ax2.spines['top'].set_visible(False)
-        #ax2.spines['left'].set_visible(False)
-        #ax.get_xaxis().tick_bottom()
-        #ax.get_yaxis().tick_right()
-        ax2.grid()
-        ax2.set_ylim([-unit,ref_len])
-
-        ax3 = plt.subplot2grid((8,8), (0,1), colspan=7, sharex=ax)
-        #ax3.set_adjustable('box-forced')
-        #ax3.set_autoscale_on(False) 
-        ax3.autoscale(False)
-        ax3.plot([0]+range(ref_len)+[ref_len-1], [0]+coverage_lst+[0], 'k', lw=0)
-        ax3.axhline(y=max_cover*0.25, lw=0.5, c='black', ls=':')
-        ax3.axhline(y=max_cover*0.5, lw=0.5, c='black', ls=':')
-        ax3.axhline(y=max_cover*0.75, lw=0.5, c='black', ls=':')
-        ax3.fill([0]+range(ref_len)+[ref_len-1], [0]+coverage_lst+[0], facecolor='gray', lw=0, alpha=0.5)
-        #ax3.xaxis.tick_top()
-        ax3.set_yticks([0, max_cover])
-        ax3.tick_params(labelbottom='off')
-        ax2.tick_params(axis='y', right='off', direction='out', left='on')
-        #ax3.spines['top'].set_visible(False)
-        #ax3.spines['right'].set_visible(False)
-        #ax.get_xaxis().tick_top()
-        #ax.get_yaxis().tick_left()
-        ax3.grid()
-        ax3.set_xlim([-unit,ref_len])
-
-
-    ### plot secondary structure along axis if given
-    if psipred_horiz_fname or psipred_vert_fname:
-        if psipred_horiz_fname:
-            ss = parse_psipred.horizontal(open(psipred_horiz_fname, 'r'))
+            if score > cutoff:
+                contacts_x.append(c_x - start)
+                contacts_y.append(c_y - start)
+                scores.append(score)
+                count += 1
+                highscore += 1
+            if (count <= ref_len * factor):
+                sum += score
+                average=sum/count
+            if (disorder[c_x] > 0.5 or disorder[c_y] > 0.5):
+                disosum += score
+                disocount += 1
         else:
-            ss = parse_psipred.vertical(open(psipred_vert_fname, 'r'))
+            tooclose.append(score)
+           
+                
+            #        if score < th:
+    #            if th == -1:
+    #                th = score
+    #            break
+    print "STATs: Highscoring: \t",highscore/ref_len,"averagescore: \t",average,"Meff: \t",max_cover,"Diso: \t",fraction_disorder,disosum/(disocount+0.000001) #,highscore.float/ref_len.float
 
-        ss = ss[start:end]
-        assert len(ss) == ref_len
- 
-        ax.axhline(y=0, lw=1, c='black')
-        ax.axvline(x=0, lw=1, c='black')
-        for i in range(len(ss)):
-            if ss[i] == 'H':
-                #ax.plot(-unit/2, i, 's', c='#8B0043', mec="#8B0043")#, markersize=2)
-                #ax.plot(i, -unit/2, 's', c='#8B0043', mec="#8B0043")#, markersize=2)
-                #ax.plot(i, -unit/2, 's', c='#8B0043', mec="#8B0043")#, markersize=2)
-                ax.add_patch(plt.Rectangle((-unit, i-0.5), unit, 1, edgecolor='#8B0043', facecolor="#8B0043"))
-                ax.add_patch(plt.Rectangle((i-0.5, -unit), 1, unit, edgecolor='#8B0043', facecolor="#8B0043"))
-            if ss[i] == 'E':
-                ax.add_patch(plt.Rectangle((-unit, i-0.5), unit, 1, edgecolor='#0080AD', facecolor="#0080AD"))
-                ax.add_patch(plt.Rectangle((i-0.5, -unit), 1, unit, edgecolor='#0080AD', facecolor="#0080AD"))
-                #ax.plot(-unit/2, i, 's', c='#0080AD', mec="#0080AD")#, markersize=2)
-                #ax.plot(i, -unit/2, 's', c='#0080AD', mec="#0080AD")#, markersize=2)
-            if ss[i] == 'C':
-                continue
+    fig = plt.figure(figsize=(8, 8), dpi=96, facecolor='w')
+    plt.hist((tooclose,scores), numbins,range=(0,1), histtype='bar',
+             normed=(numbins,numbins), alpha=0.75,
+             label=['Too_Close','Contacts'])
+    plt.xlabel('Score')
+    plt.ylabel('Normalized count')
+    fig.suptitle('%s\n Hits>%.2f:  %.2f \t <Score>: %.3f\t Meff: %d\n' %  (c_filename,cutoff,highscore/ref_len,average,max_cover))
 
-
+    
+    # PDB parsing is not included yet...
     ### plot reference contacts in the background if given
     if pdb_filename:
         chain='*'
@@ -443,137 +406,27 @@ def plot_map(fasta_filename, c_filename, factor=1.0, cutoff=9999.99, th=-1, c2_f
         ref_contacts_y = ref_contacts[1]
 
         PPVs, TPs, FPs = get_ppvs(contacts_x, contacts_y, ref_contact_map, atom_seq_ali, ref_len, factor)
-        tp_colors = get_tp_colors(contacts_x, contacts_y, ref_contact_map, atom_seq_ali)
-        img = get_colors(contacts_np, ref_contact_map=dist_mat, atom_seq_ali=atom_seq_ali, th=th)
-        sc = ax.imshow(img, interpolation='none')
    
         print 'PPV: %s %s %s %s' % (acc, PPVs[-1], TPs[-1], FPs[-1])
       
-        cmap = cm.get_cmap("binary")
-        cmap.set_bad([1,1,1,0])
-        dist_mat_masked = np.ma.array(dist_mat, mask=np.tri(dist_mat.shape[0], k=-1))
-        #sc = ax.imshow(s_score_vec(dist_mat_masked, 5), cmap=cmap, interpolation='none')
-        
-        ref_contacts_diag_x = []
-        ref_contacts_diag_y = []
-        for i in range(len(ref_contacts_x)):
-            x_i = ref_contacts_x[i]
-            y_i = ref_contacts_y[i]
-            if not dist_mat_masked.mask[x_i, y_i] and abs(x_i - y_i) >= 5:
-                ref_contacts_diag_x.append(x_i)
-                ref_contacts_diag_y.append(y_i)
-       
-        #ax.scatter(ref_contacts_diag_x, ref_contacts_diag_y, marker='+', c='#000000')
 
-
-    ### plot predicted contacts from second contact map if given
-    if c2_filename:
-        contacts2 = parse_contacts.parse(open(c2_filename, 'r'), sep)
-        contacts2_x = []
-        contacts2_y = []
-        scores2 = []
-        contact_dict2 = {}
-
-        count = 0
-
-        for i in range(len(contacts2)):
-            score = contacts2[i][0]
-            c_x = contacts2[i][1] - 1
-            c_y = contacts2[i][2] - 1
-
-            pos_diff = abs(c_x - c_y)
-            too_close = pos_diff < 5
-
-            if not too_close:
-                contacts2_x.append(c_x)
-                contacts2_y.append(c_y)
-                scores2.append(score)
-                count += 1
-               
-            if count >= ref_len * factor:
-                break
-
-        ### use TP/FP color coding if reference contacts given
-        if pdb_filename:
-            PPVs2, TPs2, FPs2 = get_ppvs(contacts2_x, contacts2_y, ref_contact_map, atom_seq_ali, ref_len, factor)
-            tp2_colors = get_tp_colors(contacts2_x, contacts2_y, ref_contact_map, atom_seq_ali)
-            print '%s %s %s %s' % (acc, PPVs2[-1], TPs2[-1], FPs2[-1])
-            fig.suptitle('%s\nPPV (upper left) = %.2f | PPV (lower right) = %.2f' % (acc, PPVs[-1], PPVs2[-1]))
-            sc = ax.scatter(contacts2_y[::-1], contacts2_x[::-1], marker='o', c=tp2_colors[::-1], s=10, alpha=0.75, lw=0)
-            sc = ax.scatter(contacts_x[::-1], contacts_y[::-1], marker='o', c=tp_colors[::-1], s=10, alpha=0.75, lw=0)
-        else:
-            sc = ax.scatter(contacts2_y[::-1], contacts2_x[::-1], marker='0', c='#D70909', edgecolor='#D70909', s=10, linewidths=0.5)
-            sc = ax.scatter(contacts_x[::-1], contacts_y[::-1], marker='o', c='#004F9D', edgecolor='#004F9D', s=10, linewidths=0.5)
-
-
-    ### plot predicted contacts from first contact map on both triangles
-    ### if no second contact map given
-    else:
-        if pdb_filename:
-            pdb_acc = parse_pdb.get_acc(open(pdb_filename))
-            if pdb_acc:
-                if chain:
-                    fig.suptitle('%s (PDB: %s, chain %s)\nPPV = %.2f' % (acc, pdb_acc, chain, PPVs[-1]))
-                else:
-                    fig.suptitle('%s (PDB: %s)\nPPV = %.2f' % (acc, pdb_acc, PPVs[-1]))
-            else:
-                fig.suptitle('%s\nPPV = %.2f' % (acc, PPVs[-1]))
-            #cmap = cm.get_cmap("binary")
-            #cmap.set_bad([1,1,1,0])
-            #contacts_np_masked = np.ma.array(contacts_np, mask=np.tri(contacts_np.shape[0], k=-1))
-            #sc = ax.imshow(contacts_np_masked.T, cmap=cmap)
-            #sc = ax.imshow(contacts_np, cmap=cmap)
-            #sc = ax.imshow(contacts_np + contacts_np.T, cmap=cm.binary, vmin=0.2, vmax=1.0, interpolation='none')
-            #sc = ax.scatter(contacts_x[::-1], contacts_y[::-1], marker='o', c=tp_colors[::-1], s=6, alpha=0.75, linewidths=0.0)
-            #sc = ax.scatter(contacts_y[::-1], contacts_x[::-1], marker='o', c=tp_colors[::-1], s=6, alpha=0.75, linewidths=0.0)
-        else:
-            #if c_filename.startswith('data'):
-            #    acc = c_filename.split('/')[1]
-            #else:
-            #    acc = c_filename.split('/')[-1]
-            fig.suptitle('%s' % acc)
-            #sc = ax.imshow(contacts_np + contacts_np.T, cmap=cm.hot_r)
-            #sc = ax.imshow(contacts_np + contacts_np.T,
-            #        cmap=cm.binary, vmin=th, vmax=1.0, interpolation='none')
-            img = get_colors(contacts_np, th=th)
-            sc = ax.imshow(img, interpolation='none')
-            #divider1 = make_axes_locatable(ax)
-            #cax1 = divider1.append_axes("right", size="2%", pad=0.05)
-            #plt.colorbar(sc, cax=cax1)
-            #plt.colorbar(sc, ax=ax)
-            sc = ax.scatter(contacts_x[::-1], contacts_y[::-1],
-                    marker='o', c="black", s=10, alpha=0.75,
-                    linewidths=0.1, edgecolors='none')
-            sc = ax.scatter(contacts_y[::-1], contacts_x[::-1], marker='o', c=scores[::-1], s=10, alpha=0.75, cmap=cm.hot_r, linewidths=0.1, edgecolors='none')
-
-    #plt.gca().set_xlim([0,ref_len])
-    #plt.gca().set_ylim([0,ref_len])
-
-    ax.grid()
-    ax.set_xlim([-unit,ref_len])
-    ax.set_ylim([-unit,ref_len])
-    #print ax.axis()
-    ax.axis([-unit,ref_len, -unit,ref_len])
-    #ax.invert_yaxis()
-    ax.set_autoscale_on(False) 
 
     if outfilename:
         if outfilename.endswith('.pdf'):
-            pp = PdfPages(outfilename)
+            pp = PdfPages(outfilename+"_statistics.pdf")
             pp.savefig(fig)
             pp.close()
         elif outfilename.endswith('.png'):
-            plt.savefig(outfilename)
+            plt.savefig(outfilename+"_statistics.png")
         else:
-            pp = PdfPages('%s.pdf' % outfilename)
+            pp = PdfPages('%s_statistics.pdf' % outfilename)
             pp.savefig(fig)
             pp.close()
     else:
-        pp = PdfPages('%s_ContactMap.pdf' % c_filename)
+        pp = PdfPages('%s_statistics.pdf' % c_filename)
         pp.savefig(fig)
         pp.close()
-
-
+        
     
 if __name__ == "__main__":
 
@@ -587,6 +440,7 @@ if __name__ == "__main__":
     p.add_argument('--c2', default='')
     p.add_argument('--psipred_horiz', default='')
     p.add_argument('--psipred_vert', default='')
+    p.add_argument('--iupred', default='')
     p.add_argument('--pdb', default='')
     p.add_argument('--heavy', action='store_true')
     p.add_argument('--chain', default='')
@@ -601,6 +455,7 @@ if __name__ == "__main__":
     fasta_filename = args['fasta_file']
     c_filename = args['contact_file']
     psipred_filename = args['psipred_horiz']
+    iupred_filename = args['iupred']
 
     # guessing separator of constraint file
     line = open(c_filename,'r').readline()
@@ -611,4 +466,5 @@ if __name__ == "__main__":
     else:
         sep = '\t'
     
-    plot_map(args['fasta_file'], args['contact_file'], factor=args['factor'], cutoff=args['cutoff'], th=args['threshold'], c2_filename=args['c2'], psipred_horiz_fname=args['psipred_horiz'], psipred_vert_fname=args['psipred_vert'], pdb_filename=args['pdb'], is_heavy=args['heavy'], chain=args['chain'], sep=sep, outfilename=args['outfile'], ali_filename=args['alignment'], meff_filename=args['meff'], name=args['name'], start=args['start'], end=args['end'])
+
+    contactanalysis(args['fasta_file'], args['contact_file'], factor=args['factor'], cutoff=args['cutoff'], th=args['threshold'], c2_filename=args['c2'], psipred_horiz_fname=args['psipred_horiz'], psipred_vert_fname=args['psipred_vert'], iupred_fname=args['iupred'], pdb_filename=args['pdb'], is_heavy=args['heavy'], chain=args['chain'], sep=sep, outfilename=args['outfile'], ali_filename=args['alignment'], meff_filename=args['meff'], name=args['name'], start=args['start'], end=args['end'])
