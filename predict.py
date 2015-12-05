@@ -260,7 +260,7 @@ start = time.time()
 
 for s in selected:
     count += 1
-    if count % 100 == 0:
+    if count % 100 == 0 and sys.stderr.isatty():
         sys.stderr.write('\rProgress: [' + '#' * (80*count/allcount) + ' ' * (80*(allcount-count)/allcount) + ']')
         now = time.time()
         sys.stderr.write('Time remaining: {:7.1f}s'.format( (allcount-count) * (now-start)/count ) )
