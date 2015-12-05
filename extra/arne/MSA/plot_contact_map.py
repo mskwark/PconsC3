@@ -1,4 +1,5 @@
 #!/usr/bin/env python
+from __future__ import division
 import sys, os, re, string
 import argparse
 from math import *
@@ -25,6 +26,7 @@ sys.path.append(home + '/git/bioinfo-toolbox/parsing')
 import parse_contacts
 import parse_psipred
 import parse_fasta
+import parse_iupred
 import parse_pdb
 
 
@@ -234,7 +236,7 @@ def get_meff_coverage(meff_file):
     return meff_lst
 
 
-def plot_map(fasta_filename, c_filename, factor=1.0, cutoff=9999.99, th=-1, c2_filename='', psipred_horiz_fname='', psipred_vert_fname='', pdb_filename='', is_heavy=False, chain='', sep=',', outfilename='', ali_filename='',  meff_filename='', name='', start=0, end=-1):  
+def plot_map(fasta_filename, c_filename, factor=1.0, cutoff=9999.99, th=-1, c2_filename='', psipred_horiz_fname='', psipred_vert_fname='',iupred_fname='', pdb_filename='', is_heavy=False, chain='', sep=',', outfilename='', ali_filename='',  meff_filename='', name='', start=0, end=-1):  
     #acc = c_filename.split('.')[0]
     #acc = fasta_filename.split('.')[0][:4]
     if name == '': 
@@ -264,8 +266,18 @@ def plot_map(fasta_filename, c_filename, factor=1.0, cutoff=9999.99, th=-1, c2_f
     contacts_y = []
     scores = []
     contact_dict = {}
+    if iupred_fname:
+        disorder = parse_iupred.pred(open(iupred_fname, 'r'))
+    else:
+        disorder = np.zeros(ref_len)
 
     count = 0
+    disotop=0
+    doubletop=0
+    disocount=0
+    doublecount=0
+    sum=0.
+    average=0.
     for i in range(len(contacts)):
         score = contacts[i][0]
         c_x = contacts[i][1] - 1
@@ -286,7 +298,14 @@ def plot_map(fasta_filename, c_filename, factor=1.0, cutoff=9999.99, th=-1, c2_f
             contacts_y.append(c_y - start)
             scores.append(score)
             count += 1
-           
+            sum += score
+            average=sum/count
+            if (disorder[c_x] > 0.5 or disorder[c_y] > 0.5):
+                disocount += 1
+            if (disorder[c_x] > 0.5 and disorder[c_y] > 0.5):
+                doublecount += 1            
+
+
         if (count >= ref_len * factor) or score < cutoff:
         #if score < th:
             if th == -1:
@@ -301,8 +320,8 @@ def plot_map(fasta_filename, c_filename, factor=1.0, cutoff=9999.99, th=-1, c2_f
     ax.tick_params(direction='out', right='off', top='off')
     ax.set_xlim([-unit,ref_len])
     ax.set_ylim([-unit,ref_len])
-    
-    ### plot alignment coverage if alignemnt given
+    max_cover=0
+    ### plot alignment coverage if alignemnt given (only on Y-axis)
     if ali_filename or meff_filename:
         # adjust overall canvas  
         ax = plt.subplot2grid((8,8), (1, 1), colspan=7, rowspan=7)#, aspect='auto')
@@ -319,6 +338,7 @@ def plot_map(fasta_filename, c_filename, factor=1.0, cutoff=9999.99, th=-1, c2_f
             coverage_lst = get_meff_coverage(meff_filename)
         max_cover = max(coverage_lst)
 
+        
         #lt = pow(10, max(1,floor(log10(max_cover)) - 1))
         #upper = int(ceil(max_cover/float(lt)) * lt)
         ax2 = plt.subplot2grid((8,8), (1,0), rowspan=7, sharey=ax)
@@ -343,28 +363,58 @@ def plot_map(fasta_filename, c_filename, factor=1.0, cutoff=9999.99, th=-1, c2_f
         ax2.grid()
         ax2.set_ylim([-unit,ref_len])
 
-        ax3 = plt.subplot2grid((8,8), (0,1), colspan=7, sharex=ax)
+        #ax3 = plt.subplot2grid((8,8), (0,1), colspan=7, sharex=ax)
         #ax3.set_adjustable('box-forced')
         #ax3.set_autoscale_on(False) 
-        ax3.autoscale(False)
-        ax3.plot([0]+range(ref_len)+[ref_len-1], [0]+coverage_lst+[0], 'k', lw=0)
-        ax3.axhline(y=max_cover*0.25, lw=0.5, c='black', ls=':')
-        ax3.axhline(y=max_cover*0.5, lw=0.5, c='black', ls=':')
-        ax3.axhline(y=max_cover*0.75, lw=0.5, c='black', ls=':')
-        ax3.fill([0]+range(ref_len)+[ref_len-1], [0]+coverage_lst+[0], facecolor='gray', lw=0, alpha=0.5)
+        #ax3.autoscale(False)
+        #ax3.plot([0]+range(ref_len)+[ref_len-1], [0]+coverage_lst+[0], 'k', lw=0)
+        #ax3.axhline(y=max_cover*0.25, lw=0.5, c='black', ls=':')
+        #ax3.axhline(y=max_cover*0.5, lw=0.5, c='black', ls=':')
+        #ax3.axhline(y=max_cover*0.75, lw=0.5, c='black', ls=':')
+        #ax3.fill([0]+range(ref_len)+[ref_len-1], [0]+coverage_lst+[0], facecolor='gray', lw=0, alpha=0.5)
         #ax3.xaxis.tick_top()
-        ax3.set_yticks([0, max_cover])
-        ax3.tick_params(labelbottom='off')
+        #ax3.set_yticks([0, max_cover])
+        #ax3.tick_params(labelbottom='off')
         ax2.tick_params(axis='y', right='off', direction='out', left='on')
         #ax3.spines['top'].set_visible(False)
         #ax3.spines['right'].set_visible(False)
         #ax.get_xaxis().tick_top()
         #ax.get_yaxis().tick_left()
-        ax3.grid()
-        ax3.set_xlim([-unit,ref_len])
+        #ax3.grid()
+        #ax3.set_xlim([-unit,ref_len])
 
 
     ### plot secondary structure along axis if given
+    average_disorder=0.
+    fraction_disorder=0.
+    statline = "Highs: %.1f Aver: %.2f\t Meff: %.0f" % (count/ref_len,average,max_cover)
+    if iupred_fname:
+        average_disorder = np.sum(disorder)/ref_len
+        fraction_disorder = 0.0
+        for d in disorder:
+            if (d>0.5):
+                fraction_disorder += 1/ref_len
+                
+        ax3 = plt.subplot2grid((8,8), (0,1), colspan=7, sharex=ax)
+        ax3.set_adjustable('box-forced')
+        ax3.set_autoscale_on(False) 
+        ax3.autoscale(False)
+        ax3.plot([0]+range(ref_len)+[ref_len-1], [0]+disorder+[0], 'b', lw=2)
+        ax3.axhline(y=0.5, lw=0.5, c='black', ls=':')
+        #ax3.fill([0]+range(ref_len)+[ref_len-1], [0]+disorder+[0], facecolor='gray', lw=0, alpha=0.5)
+        ax3.xaxis.tick_top()
+        ax3.set_yticks([0, 1])
+        ax3.tick_params(labelbottom='off')
+        ax3.spines['top'].set_visible(False)
+        ax3.spines['right'].set_visible(False)
+        ax.get_xaxis().tick_top()
+        ax.get_yaxis().tick_left()
+        ax3.grid()
+        ax3.set_xlim([-unit,ref_len])
+        statline = "Highs: %.1f (%.1f%%) (%.1f%%) \t Aver: %.2f\t Meff: %.0f\t Diso: %.1f%% \t" % (count/ref_len,100*disocount/count,100*doublecount/count,average,max_cover,100*fraction_disorder)
+
+
+    print "STATs: ",statline
     if psipred_horiz_fname or psipred_vert_fname:
         if psipred_horiz_fname:
             ss = parse_psipred.horizontal(open(psipred_horiz_fname, 'r'))
@@ -531,7 +581,7 @@ def plot_map(fasta_filename, c_filename, factor=1.0, cutoff=9999.99, th=-1, c2_f
             #    acc = c_filename.split('/')[1]
             #else:
             #    acc = c_filename.split('/')[-1]
-            fig.suptitle('%s' % acc)
+            fig.suptitle('%s\n%s' % (acc,statline))
             #sc = ax.imshow(contacts_np + contacts_np.T, cmap=cm.hot_r)
             #sc = ax.imshow(contacts_np + contacts_np.T,
             #        cmap=cm.binary, vmin=th, vmax=1.0, interpolation='none')
@@ -587,6 +637,7 @@ if __name__ == "__main__":
     p.add_argument('--c2', default='')
     p.add_argument('--psipred_horiz', default='')
     p.add_argument('--psipred_vert', default='')
+    p.add_argument('--iupred', default='')
     p.add_argument('--pdb', default='')
     p.add_argument('--heavy', action='store_true')
     p.add_argument('--chain', default='')
@@ -601,6 +652,7 @@ if __name__ == "__main__":
     fasta_filename = args['fasta_file']
     c_filename = args['contact_file']
     psipred_filename = args['psipred_horiz']
+    iupred_filename = args['iupred']
 
     # guessing separator of constraint file
     line = open(c_filename,'r').readline()
@@ -611,4 +663,4 @@ if __name__ == "__main__":
     else:
         sep = '\t'
     
-    plot_map(args['fasta_file'], args['contact_file'], factor=args['factor'], cutoff=args['cutoff'], th=args['threshold'], c2_filename=args['c2'], psipred_horiz_fname=args['psipred_horiz'], psipred_vert_fname=args['psipred_vert'], pdb_filename=args['pdb'], is_heavy=args['heavy'], chain=args['chain'], sep=sep, outfilename=args['outfile'], ali_filename=args['alignment'], meff_filename=args['meff'], name=args['name'], start=args['start'], end=args['end'])
+    plot_map(args['fasta_file'], args['contact_file'], factor=args['factor'], cutoff=args['cutoff'], th=args['threshold'], c2_filename=args['c2'], psipred_horiz_fname=args['psipred_horiz'], psipred_vert_fname=args['psipred_vert'], iupred_fname=args['iupred'], pdb_filename=args['pdb'], is_heavy=args['heavy'], chain=args['chain'], sep=sep, outfilename=args['outfile'], ali_filename=args['alignment'], meff_filename=args['meff'], name=args['name'], start=args['start'], end=args['end'])

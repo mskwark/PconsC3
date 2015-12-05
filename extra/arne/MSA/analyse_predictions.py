@@ -276,17 +276,17 @@ def contactanalysis(fasta_filename, c_filename, factor=1.0, cutoff=9999.99, th=-
     else:
         max_cover = 0
     average_disorder=0.
-    fraction_disorer=0.
+    fraction_disorder=0.
     if iupred_fname:
         disorder = parse_iupred.pred(open(iupred_fname, 'r'))
     else:
         disorder=np.zeros(ref_len)
     average_disorder = np.sum(disorder)/ref_len
-    fraction_disorder = np.sum(disorder > 0.5)/ref_len
-
-    print average_disorder,fraction_disorder,np.where(disorder > 0.5),ref_len
-    foo=np.where(disorder > 0.5)
-    print foo
+    fraction_disorder = 0.0
+    for i in disorder:
+        if (i>0.5):
+            fraction_disorder +=1/ref_len
+            
     ### get top "factor" * "ref_len" predicted contacts
     contacts = parse_contacts.parse(open(c_filename, 'r'), sep,1)
     contacts_np = parse_contacts.get_numpy_cmap(contacts)
@@ -304,8 +304,10 @@ def contactanalysis(fasta_filename, c_filename, factor=1.0, cutoff=9999.99, th=-
     sum=0.0
     average=0.0
     histo=np.zeros(numbins)
-    print disorder
-    print disorder[1]
+    disotop=0
+    doubletop=0
+    disocount=0
+    doublecount=0
     for i in range(len(contacts)):
         score = contacts[i][0]
         c_x = contacts[i][1] - 1
@@ -320,38 +322,38 @@ def contactanalysis(fasta_filename, c_filename, factor=1.0, cutoff=9999.99, th=-
         
         pos_diff = abs(c_x - c_y)
         too_close = pos_diff < 5
-        disosum=0.
-        disocount=0
         if not too_close:
             if score > cutoff:
                 contacts_x.append(c_x - start)
                 contacts_y.append(c_y - start)
                 scores.append(score)
                 count += 1
-                highscore += 1
+                if (disorder[c_x] > 0.5 or disorder[c_y] > 0.5):
+                    disocount += 1
+                if (disorder[c_x] > 0.5 and disorder[c_y] > 0.5):
+                    doublecount += 1
+                
             if (count <= ref_len * factor):
                 sum += score
                 average=sum/count
-            if (disorder[c_x] > 0.5 or disorder[c_y] > 0.5):
-                disosum += score
-                disocount += 1
+                if (disorder[c_x] > 0.5 or disorder[c_y] > 0.5):
+                    disotop += 1
+                if (disorder[c_x] > 0.5 and disorder[c_y] > 0.5):
+                    doubletop += 1
+
         else:
             tooclose.append(score)
            
                 
-            #        if score < th:
-    #            if th == -1:
-    #                th = score
-    #            break
-    print "STATs: Highscoring: \t",highscore/ref_len,"averagescore: \t",average,"Meff: \t",max_cover,"Diso: \t",fraction_disorder,disosum/(disocount+0.000001) #,highscore.float/ref_len.float
-
+    line="Highs: %.1f (%.1f%%) (%.1f%%)\t average:  %.2f (%.1f%%) (%.1f%%)\t Meff: %.0f\t Diso: %.1f%% \t" % (count/ref_len,100*disocount/count,100*doublecount/count,average,100*disotop/(ref_len * factor),100*doubletop/(ref_len * factor),max_cover,100*fraction_disorder)
+    print "STATs: ",line
     fig = plt.figure(figsize=(8, 8), dpi=96, facecolor='w')
     plt.hist((tooclose,scores), numbins,range=(0,1), histtype='bar',
              normed=(numbins,numbins), alpha=0.75,
              label=['Too_Close','Contacts'])
     plt.xlabel('Score')
     plt.ylabel('Normalized count')
-    fig.suptitle('%s\n Hits>%.2f:  %.2f \t <Score>: %.3f\t Meff: %d\n' %  (c_filename,cutoff,highscore/ref_len,average,max_cover))
+    fig.suptitle('%s\n%s\n' %  (c_filename,line))
 
     
     # PDB parsing is not included yet...
