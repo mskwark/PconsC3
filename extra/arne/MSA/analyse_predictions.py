@@ -346,7 +346,7 @@ def contactanalysis(fasta_filename, c_filename, factor=1.0, cutoff=9999.99, th=-
            
                 
     line="Highs: %.1f (%.1f%%) (%.1f%%)\t average:  %.2f (%.1f%%) (%.1f%%)\t Meff: %.0f\t Diso: %.1f%% \t" % (count/ref_len,100*disocount/count,100*doublecount/count,average,100*disotop/(ref_len * factor),100*doubletop/(ref_len * factor),max_cover,100*fraction_disorder)
-    print "STATs: ",line
+    print "STATs: %s \t %s\t" % (fasta_filename,line)
     fig = plt.figure(figsize=(8, 8), dpi=96, facecolor='w')
     plt.hist((tooclose,scores), numbins,range=(0,1), histtype='bar',
              normed=(numbins,numbins), alpha=0.75,

@@ -414,7 +414,7 @@ def plot_map(fasta_filename, c_filename, factor=1.0, cutoff=9999.99, th=-1, c2_f
         statline = "Highs: %.1f (%.1f%%) (%.1f%%) \t Aver: %.2f\t Meff: %.0f\t Diso: %.1f%% \t" % (count/ref_len,100*disocount/count,100*doublecount/count,average,max_cover,100*fraction_disorder)
 
 
-    print "STATs: ",statline
+    print "STATs: %s\t%s" % (fasta_filename,statline)
     if psipred_horiz_fname or psipred_vert_fname:
         if psipred_horiz_fname:
             ss = parse_psipred.horizontal(open(psipred_horiz_fname, 'r'))
