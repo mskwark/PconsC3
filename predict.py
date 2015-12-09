@@ -36,7 +36,7 @@ files = sys.argv[1:]
 #maxdepth = -1
 maxdepth = files[8]
 
-if maxdepth < 0:
+if int(maxdepth) <= 0:
     forestlocation = files[7] + '/tlayer{:d}'
 else:
     forestlocation = files[7] + '/tlayer{:d}-' + str(maxdepth)
@@ -44,6 +44,7 @@ else:
 for i in range(5):
     abort = False
     if not os.path.exists(forestlocation.format(i) + '/tree.list'.format(i)):
+        sys.stderr.write(forestlocation.format(i) + '/tree.list'.format(i))
         sys.stderr.write('Forest data for layer {:d} is missing.\n'.format(i))
         abort = True
     if abort:
@@ -260,7 +261,7 @@ start = time.time()
 
 for s in selected:
     count += 1
-    if count % 100 == 0 and sys.stderr.isatty() and sys.stdout.isatty(): # Trying to make it not printin batch submissions
+    if count % 100 == 0 and sys.stderr.isatty() and sys.stdout.isatty(): # Trying to make it not printin batch submissions (but does not realluy work)
         sys.stderr.write('\rProgress: [' + '#' * (80*count/allcount) + ' ' * (80*(allcount-count)/allcount) + ']')
         now = time.time()
         sys.stderr.write('Time remaining: {:7.1f}s'.format( (allcount-count) * (now-start)/count ) )

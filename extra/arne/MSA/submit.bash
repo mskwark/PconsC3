@@ -1,11 +1,11 @@
-#!/bin/bash                                                                                                       
-#SBATCH -A snic2015-10-12                                                                                         
-# We actually start 6 jobs in parallel.                                                                           
-# Probably more efficient than running with 5 thread.                                                             
-#SBATCH -n 6    
-#SBATCH -c 1   
-#SBATCH --time=04:00:00   
-#SBATCH -J RunJackhmmer       
+#!/bin/bash 
+#SBATCH -A snic2015-10-12 
+# We actually start 6 jobs in parallel.
+# Probably more efficient than running with 5 thread.
+#SBATCH -n 6 
+#SBATCH -c 1 
+#SBATCH --time=04:00:00 
+#SBATCH -J RunJackhmmer 
 #SBATCH --output=out/PconsC3.%J.out
 #SBATCH --error=err/PconsC3.%J.err 
 
@@ -48,8 +48,8 @@ do
     then
 	if [ -e $j.gdca ]  && [ -e $j.0.02.plm20 ]   && [ -e $j.rr ]  && [ -e $j.fa.rsa ]  && [ -e  $j.ss2 ] && [ -e  $j.gneff ]  && [ -e $j.trimmed ]
 	then
-            echo " srun -A snic2015-10-12 --time=24:00:00 -n 1 -c 6 $HOME/git/PconsC3/predict.py $j.gdca $j.0.02.plm20 $j.rr $j.fa.rsa $j.ss2 $j.gneff $j.trimmed $HOME/git/PconsC3/ 5 $j.PconsC3  &> $j-predict.out &"
-            srun -A snic2015-10-12 --time=24:00:00 -n 1 -c 6 $HOME/git/PconsC3/predict.py $j.gdca $j.0.02.plm20 $j.rr $j.fa.rsa $j.ss2 $j.gneff $j.trimmed $HOME/git/PconsC3/ 5 $j.PconsC3  &> $j-predict.out &
+            echo " srun -A snic2015-10-12 --time=24:00:00 -n 1 -c 6 $HOME/git/PconsC3/predict.py $j.gdca $j.0.02.plm20 $j.rr $j.fa.rsa $j.ss2 $j.gneff $j.trimmed $HOME/git/PconsC3/ -1 $j.PconsC3  &> $j-predict.out &"
+            srun -A snic2015-10-12 --time=24:00:00 -n 1 -c 6 $HOME/git/PconsC3/predict.py $j.gdca $j.0.02.plm20 $j.rr $j.fa.rsa $j.ss2 $j.gneff $j.trimmed $HOME/git/PconsC3/ -1 $j.PconsC3  &> $j-predict.out &
 	else 
 	    ls -l $j.gdca $j.0.02.plm20 $j.rr $j.fa.rsa $j.ss2 $j.gneff $j.trimmed 
 	fi
