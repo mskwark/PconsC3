@@ -80,10 +80,10 @@ def get_cb_contacts(gapped_cb_lst):
     #    offset = abs(first_i)
 
     for i, cb1 in enumerate(gapped_cb_lst):
-        if cb1 == '-':
+        if str(cb1) == str('-'):
             continue
         for j, cb2 in enumerate(gapped_cb_lst):
-            if cb2 == '-':
+            if str(cb2) == str('-'):
                 continue
             diff_vec = cb1 - cb2
             #dist_mat[i+offset,j+offset] = np.sqrt(np.sum(diff_vec * diff_vec))
