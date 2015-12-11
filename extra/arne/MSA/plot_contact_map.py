@@ -98,26 +98,47 @@ def get_ppvs(contacts_x, contacts_y, ref_contact_map, atom_seq_ali, ref_len, fac
     TPs = []
     FPs = []
 
-    for num_c in range(min(len(contacts_x), int(ceil(ref_len * factor))) + 1)[1:]:
-        TP = 0.0
-        FP = 0.0
-        for i in range(num_c):
-            c_x = contacts_x[i]
-            c_y = contacts_y[i]
-            if atom_seq_ali[c_x] == '-':
-                continue
-            if atom_seq_ali[c_y] == '-':
-                continue
-            if ref_contact_map[c_x, c_y] > 0:
-                TP += 1.0 / (ref_len*factor)
-            else:
-                FP += 1.0 / (ref_len*factor)
+    TP=0
+    FP=0
+    
+#    for num_c in range(min(len(contacts_x), int(ceil(ref_len * factor))) + 1)[1:]:
+#        TP = 0.0
+#        FP = 0.0
+#        for i in range(num_c):
+#            c_x = contacts_x[i]
+#            c_y = contacts_y[i]
+#            if atom_seq_ali[c_x] == '-':
+#                continue
+#            if atom_seq_ali[c_y] == '-':
+#                continue
+#            if ref_contact_map[c_x, c_y] > 0:
+#                TP += 1.0 / (ref_len*factor)
+#            else:
+#                FP += 1.0 / (ref_len*factor)
+#        
+#
+#        if TP > 0.0:
+#            PPVs.append(TP / (TP + FP))
+#            TPs.append(TP)
+#            FPs.append(FP)
 
-        if TP > 0.0:
-            PPVs.append(TP / (TP + FP))
-            TPs.append(TP)
-            FPs.append(FP)
+        # TEST
+    for num_c in range(min(len(contacts_x), int(ceil(ref_len * factor))) ):
+        c_x = contacts_x[num_c]
+        c_y = contacts_y[num_c]
+        if atom_seq_ali[c_x] == '-':
+            continue
+        if atom_seq_ali[c_y] == '-':
+            continue
+        if ref_contact_map[c_x, c_y] > 0:
+            TP += 1.0 / (ref_len*factor)
+        else:
+            FP += 1.0 / (ref_len*factor)
+        PPVs.append(TP / (TP + FP))
+        TPs.append(TP)
+        FPs.append(FP)
 
+            
 
     if len(PPVs) == 0:
         PPVs.append(0.0)
