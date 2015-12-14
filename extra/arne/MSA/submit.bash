@@ -41,7 +41,7 @@ do
      fi
      if [ !  -e $j.0.02.plm20 ]
      then
-         srun -A snic2015-10-12 --time=24:00:00 -n 1 -c 6 $HOME/git/PconsC3/runplm.py $i &> $j-plm.out &
+         srun -A snic2015-10-12 --mem 96GB --time=48:00:00 -n 1 -c 6 $HOME/git/PconsC3/runplm.py $i &> $j-plm.out &
          echo "srun -A snic2015-10-12 --time=24:00:00 -n 1 -c 6 $HOME/git/PconsC3/runplm.py $i &> $j-plm.out &"
      fi
     if [ !  -e $j.PconsC3.l5 ]

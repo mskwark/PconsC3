@@ -262,9 +262,9 @@ start = time.time()
 for s in selected:
     count += 1
     if count % 100 == 0 and sys.stderr.isatty() and sys.stdout.isatty(): # Trying to make it not printin batch submissions (but does not realluy work)
-        sys.stderr.write('\rProgress: [' + '#' * (80*count/allcount) + ' ' * (80*(allcount-count)/allcount) + ']')
+#        sys.stderr.write('\rProgress: [' + '#' * (80*count/allcount) + ' ' * (80*(allcount-count)/allcount) + ']')
         now = time.time()
-        sys.stderr.write('Time remaining: {:7.1f}s'.format( (allcount-count) * (now-start)/count ) )
+#        sys.stderr.write('Time remaining: {:7.1f}s'.format( (allcount-count) * (now-start)/count ) )
     q = []
     q.append(abs(s[0]-s[1]))
 
