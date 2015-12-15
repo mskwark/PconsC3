@@ -80,10 +80,10 @@ def get_cb_contacts(gapped_cb_lst):
     #    offset = abs(first_i)
 
     for i, cb1 in enumerate(gapped_cb_lst):
-        if cb1 == '-':
+        if str(cb1) == str('-'):
             continue
         for j, cb2 in enumerate(gapped_cb_lst):
-            if cb2 == '-':
+            if str(cb2) == str('-'):
                 continue
             diff_vec = cb1 - cb2
             #dist_mat[i+offset,j+offset] = np.sqrt(np.sum(diff_vec * diff_vec))
@@ -92,28 +92,81 @@ def get_cb_contacts(gapped_cb_lst):
 
 
 
-def get_ppvs(contacts_x, contacts_y, ref_contact_map, atom_seq_ali, ref_len, factor):
+def print_contacts(fasta_filename,score,contacts_x, contacts_y, ref_contact_map, atom_seq_ali, ref_len, factor,disorder):
+    #    for num_c in range(min(len(contacts_x), int(ceil(ref_len * factor))) + 1)[1:]:
+    TP = 0.0
+    FP = 0.0
+    disoTP = 0.0
+    disoFP = 0.0
+    mixTP = 0.0
+    mixFP = 0.0
+    for i in range(len(contacts_x) ):
+        c_x = contacts_x[i]
+        c_y = contacts_y[i]
+        if atom_seq_ali[c_x] == '-':
+            continue
+        if atom_seq_ali[c_y] == '-':
+            continue
+        if len(disorder)>i:
+            print "DATA: ",fasta_filename,i,scores[i],c_x,c_y,disorder[c_x],disorder[c_y]
+        else:
+            print "DATA: ",fasta_filename,i,scores[i],c_x,c_y
+
+
+
+def get_ppvs(contacts_x, contacts_y, ref_contact_map, atom_seq_ali, ref_len, factor,disorder):
 
     PPVs = []
     TPs = []
     FPs = []
+    disoPPVs = []
+    disoTPs = []
+    disoFPs = []
+    mixPPVs = []
+    mixTPs = []
+    mixFPs = []
+    disocount = 0
+    mixcount = 0
+    #    for num_c in range(min(len(contacts_x), int(ceil(ref_len * factor))) + 1)[1:]:
+    TP = 0.0
+    FP = 0.0
+    disoTP = 0.0
+    disoFP = 0.0
+    mixTP = 0.0
+    mixFP = 0.0
+    for i in range(len(contacts_x) ):
+        c_x = contacts_x[i]
+        c_y = contacts_y[i]
+        if atom_seq_ali[c_x] == '-':
+            continue
+        if atom_seq_ali[c_y] == '-':
+            continue
+        if (disorder[c_x] > 0.5 and disorder[c_y] > 0.5):
+            if (disocount < ref_len * factor):
+                disocount+=1
+            if ref_contact_map[c_x, c_y] > 0:
+                disoTP += 1.0 
+            else:
+                disoFP += 1.0 
+            disoPPVs.append(disoTP / (disoTP + disoFP))
+            disoTPs.append(disoTP/disocount)
+            disoFPs.append(disoFP/disocount)
 
-    for num_c in range(min(len(contacts_x), int(ceil(ref_len * factor))) + 1)[1:]:
-        TP = 0.0
-        FP = 0.0
-        for i in range(num_c):
-            c_x = contacts_x[i]
-            c_y = contacts_y[i]
-            if atom_seq_ali[c_x] == '-':
-                continue
-            if atom_seq_ali[c_y] == '-':
-                continue
+        elif (disorder[c_x] > 0.5 or disorder[c_y] > 0.5):
+            if (mixcount < ref_len * factor):
+                mixcount+=1
+            if ref_contact_map[c_x, c_y] > 0:
+                mixTP += 1.0 
+            else:
+                mixFP += 1.0 
+            mixPPVs.append(mixTP / (mixTP + mixFP))
+            mixTPs.append(mixTP/mixcount)
+            mixFPs.append(mixFP/mixcount)
+        if (i < ref_len * factor):
             if ref_contact_map[c_x, c_y] > 0:
                 TP += 1.0 / (ref_len*factor)
             else:
                 FP += 1.0 / (ref_len*factor)
-
-        if TP > 0.0:
             PPVs.append(TP / (TP + FP))
             TPs.append(TP)
             FPs.append(FP)
@@ -125,8 +178,20 @@ def get_ppvs(contacts_x, contacts_y, ref_contact_map, atom_seq_ali, ref_len, fac
         TPs.append(0.0)
     if len(FPs) == 0:
         FPs.append(0.0)
+    if len(mixPPVs) == 0:
+        mixPPVs.append(0.0)
+    if len(mixTPs) == 0:
+        mixTPs.append(0.0)
+    if len(mixFPs) == 0:
+        mixFPs.append(0.0)
+    if len(disoPPVs) == 0:
+        disoPPVs.append(0.0)
+    if len(disoTPs) == 0:
+        disoTPs.append(0.0)
+    if len(disoFPs) == 0:
+        disoFPs.append(0.0)
 
-    return PPVs, TPs, FPs
+    return PPVs, TPs, FPs,mixPPVs, mixTPs, mixFPs,disoPPVs, disoTPs, disoFPs
 
 
 def get_tp_colors(contacts_x, contacts_y, ref_contact_map, atom_seq_ali):
@@ -295,19 +360,30 @@ def contactanalysis(fasta_filename, c_filename, factor=1.0, cutoff=9999.99, th=-
     contacts_x = []
     contacts_y = []
     scores = []
+    mixscores = []
+    disoscores = []
     tooclose = []    
     contact_dict = {}
 
     count = 0
+    mixcount = 0
+    disocount = 0
     highscore = 0
     numbins=20
     sum=0.0
+    disosum=0.0
+    mixsum=0.0
     average=0.0
+    mixaverage=0.0
+    disoaverage=0.0
     histo=np.zeros(numbins)
     disotop=0
     doubletop=0
-    disocount=0
-    doublecount=0
+    mixcount=0
+    mixtop=0
+
+
+    # We actually divide the analysis into three groups (ordered,disordered and mixed)
     for i in range(len(contacts)):
         score = contacts[i][0]
         c_x = contacts[i][1] - 1
@@ -326,27 +402,30 @@ def contactanalysis(fasta_filename, c_filename, factor=1.0, cutoff=9999.99, th=-
             if score > cutoff:
                 contacts_x.append(c_x - start)
                 contacts_y.append(c_y - start)
-                scores.append(score)
-                count += 1
-                if (disorder[c_x] > 0.5 or disorder[c_y] > 0.5):
+                if (disorder[c_x] > 0.5 and disorder[c_y] > 0.5):
                     disocount += 1
-                if (disorder[c_x] > 0.5 and disorder[c_y] > 0.5):
-                    doublecount += 1
-                
-            if (count <= ref_len * factor):
-                sum += score
-                average=sum/count
-                if (disorder[c_x] > 0.5 or disorder[c_y] > 0.5):
-                    disotop += 1
-                if (disorder[c_x] > 0.5 and disorder[c_y] > 0.5):
-                    doubletop += 1
+                    disoscores.append(score)
+                    if (disocount <= ref_len * factor):
+                        disosum += score
+                        disoaverage=disosum/disocount
+                elif (disorder[c_x] > 0.5 or disorder[c_y] > 0.5):
+                    mixcount += 1
+                    mixscores.append(score)
+                    if (mixcount <= ref_len * factor):
+                        mixsum += score
+                        mixaverage=mixsum/mixcount
+                count += 1
+                scores.append(score)
+                if (count <= ref_len * factor):
+                    sum += score
+                    average=sum/count
+
 
         else:
             tooclose.append(score)
            
                 
-    line="Highs: %.1f (%.1f%%) (%.1f%%)\t average:  %.2f (%.1f%%) (%.1f%%)\t Meff: %.0f\t Diso: %.1f%% \t" % (count/ref_len,100*disocount/count,100*doublecount/count,average,100*disotop/(ref_len * factor),100*doubletop/(ref_len * factor),max_cover,100*fraction_disorder)
-    print "STATs: %s \t %s\t" % (fasta_filename,line)
+    line="Highs: %.1f (%.1f%%) (%.1f%%)\t average:  %.2f (%.2f) (%.2f)\t Meff: %.0f\t Diso: %.1f%% \t" % (count/ref_len,100*mixcount/count,100*disocount/count,average,mixaverage,disoaverage,max_cover,100*fraction_disorder)
     fig = plt.figure(figsize=(8, 8), dpi=96, facecolor='w')
     plt.hist((tooclose,scores), numbins,range=(0,1), histtype='bar',
              normed=(numbins,numbins), alpha=0.75,
@@ -356,8 +435,7 @@ def contactanalysis(fasta_filename, c_filename, factor=1.0, cutoff=9999.99, th=-
     fig.suptitle('%s\n%s\n' %  (c_filename,line))
 
     
-    # PDB parsing is not included yet...
-    ### plot reference contacts in the background if given
+    ### Calculate reference contacts in the background if given
     if pdb_filename:
         chain='*'
         # We try to get all chains...
@@ -407,11 +485,20 @@ def contactanalysis(fasta_filename, c_filename, factor=1.0, cutoff=9999.99, th=-
         ref_contacts_x = ref_contacts[0]
         ref_contacts_y = ref_contacts[1]
 
-        PPVs, TPs, FPs = get_ppvs(contacts_x, contacts_y, ref_contact_map, atom_seq_ali, ref_len, factor)
-   
-        print 'PPV: %s %s %s %s' % (acc, PPVs[-1], TPs[-1], FPs[-1])
-      
+        PPVs, TPs, FPs,mixPPVs, mixTPs, mixFPs,disoPPVs, disoTPs, disoFPs = get_ppvs(contacts_x, contacts_y, ref_contact_map, atom_seq_ali, ref_len, factor,disorder)
 
+
+           
+#        ppv='PPV: %.2f %.2f %.2f' % (float(PPVs[-1]), float(TPs[-1]), float(FPs[-1]))
+        ppv='PPV: %.2f (%d)\t%.2f (%d)\t%.2f (%d) ' % (float(PPVs[-1]),len(PPVs), float(mixPPVs[-1]),len(mixPPVs), float(disoPPVs[-1]),len(disoPPVs))
+        print "STATs: %s \t %s\t%s\t" % (fasta_filename,line,ppv)
+    else:
+        print "STATs: %s \t %s\t" % (fasta_filename,line)
+
+
+    # We should print statistics for each residue..
+
+    
 
     if outfilename:
         if outfilename.endswith('.pdf'):
