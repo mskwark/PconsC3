@@ -29,7 +29,17 @@
 
 #     We are very grateful for bug reports! Please contact us at soeding@genzentrum.lmu.de
 
-use lib $ENV{"HHLIB"}."/scripts";
+if ( -d "/proj/bioinfo/software/PconsC2-extra/hhsuite-2.0.16-linux-x86_64/scripts/"){
+    print "\nINFO: We are at NSC\n";
+    use lib "/proj//bioinfo/software/PconsC2-extra/hhsuite-2.0.16-linux-x86_64/scripts/";
+}elsif ( -d "/pfs/nobackup/home/a/arnee/Software/PconsC2-extra/hhsuite-2.0.16/scripts/"){
+    print "\nINFO: We are at HPC2n\n";
+    use lib "/pfs/nobackup/home/a/arnee/Software/PconsC2-extra/hhsuite-2.0.16/scripts/";
+}else{
+    print "INFO: We are uting HHLIB\n";
+    use lib $ENV{"HHLIB"}."/scripts";
+}
+
 #use lib "/proj/bioinfo/software/PconsC2-extra/hhsuite-2.0.16/scripts";
 use HHPaths;   # config file with path variables for nr, blast, psipred, pdb, dssp etc.
 use Align;     # Needleman-Wunsch and Smith-Waterman alignment functions
@@ -203,7 +213,7 @@ if ($informat ne "hmm") {
     }
     
     # Filter alignment to diversity $neff 
-    if ($v>=1) {printf ("Filtering alignment to diversity $neff ...\n");}
+   if ($v>=1) {printf ("Filtering alignment to diversity $neff ...\n");}
     &HHPaths::System("hhfilter -v $v2 -neff $neff -i $tmpfile.in.a3m -o $tmpfile.in.a3m");
     
     # Reformat into PSI-BLAST readable file for jumpstarting 
