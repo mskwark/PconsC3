@@ -59,7 +59,8 @@ done
 
 seqbase=`basename $seqfile|sed -e s/\.seq$// |sed -e s/\.fa$// |sed -e s/\.fasta$//|sed -e s/\.trimmed$//   `;
 seqname=`basename  $seqfile`
-rootname=`echo $seqname | sed -E "s/\..*//"`
+#rootname=`echo $seqname | sed -E "s/\.fa.*//"`
+rootname=$seqbase
 cp $seqfile $workdir/
 
 
@@ -77,12 +78,12 @@ then
     SEQ=$rootname.fasta
     ALN=$rootname.trimmed
 else
-# We need to run hhblits
-    i='hhE0'
+# We need to run hhblits o rjackhmmer (changed to JH now)
     
     if [[ ! -s $rootname.trimmed ]] 
     then 
-	$bin/runhhblits.py -c $cpu -name $i -e 0.1 $seqname
+#	$bin/runhhblits.py -c $cpu -name  'HHE1' -e 0.1 $seqname
+	$bin/runjackhmmer.py -c $cpu  -e 0.001 $seqname
 	$bin/a3mToTrimmed.py $seqname.$i.a3m > $rootname.trimmed 
     fi
 # Note trimsequence.pl does not work for this..
