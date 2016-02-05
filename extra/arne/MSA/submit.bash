@@ -42,7 +42,6 @@ do
           srun --mem 120GB -A snic2015-10-12 --time=24:00:00 -n 1 -c 6 $HOME/git/PconsC3/rungdca.py $i &> $j-gdca.out &
            echo "srun -A snic2015-10-12 --time=04:00:00 -n 1 -c 6 $HOME/git/PconsC3/rungdca.py $i &> $j-gdca.out &"
        fi
->>>>>>> 133155f95a40feb45217fa423fffefcb0eeba94a
       if [ !  -e $j.0.02.plm20 ]
       then
           srun -A snic2015-10-12 --mem 120GB --time=48:00:00 -n 1 -c 6 $HOME/git/PconsC3/runplm.py $i &> $j-plm.out &
