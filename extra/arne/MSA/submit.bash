@@ -15,14 +15,14 @@ do
     k=`basename $i .fa`
     l=`basename $k .fasta`
     j=`basename $l .trimmed`
-    m=`basename $j .JH0.001`
+    m=`echo $j | ses "s/.fa.*//"`
 #    if [ !  -e $k.out ]
 #    then
 #        srun -A snic2015-10-12 --time=04:00:00 -n 1 -c 8 ~/git/PconsC3/extra/arne/MSA/run_PconsC3.bash  $i &> $j.out &
 #    fi
       if [ !  -e $j.rr ]
       then
-          srun --mem 96GB -A snic2015-10-12 --time=24:00:00 -n 1 -c 6 $HOME/git/PconsC3/extra/arne/MSA/runPhyCMAP.bash $j.fa &> $j-phycmap.out &
+          srun --mem 96GB -A snic2015-10-12 --time=24:00:00 -n 1 -c 6 $HOME/git/PconsC3/extra/arne/MSA/runPhyCMAP.bash $m.fa &> $j-phycmap.out &
  	 echo "srun --mem 96GB -A snic2015-10-12 --time=24:00:00 -n 1 -c 6 $HOME/git/PconsC3/extra/arne/MSA/runPhyCMAP.bash $j.fa &> $j-phycmap.out &"
       fi
       if [ !  -e $m.rsa ]

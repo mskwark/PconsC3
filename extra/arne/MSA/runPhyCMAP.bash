@@ -4,12 +4,15 @@
 if [ -a "/pfs/nobackup/home/a/arnee/Software/PconsC2-extra/PhyCmap/phycmap.release/" ]
 then
     install_dir="/pfs/nobackup/home/a/arnee/Software/PconsC2-extra/PhyCmap/phycmap.release/"
+    echo "We are at HPC2N"
 elif [ -a "/proj/bioinfo/software/PconsC2-extra/PhyCmap/phycmap.release/" ]
 then
     install_dir="/proj/bioinfo/software/PconsC2-extra/PhyCmap/phycmap.release/"
+    echo "We are at NSC"
 elif [ -a "/scratch/arne/PconsC2-extra/PhyCmap/phycmap.release/" ]
 then
     install_dir="/scratch/arne/PconsC2-extra/PhyCmap/phycmap.release/"
+    echo "We are at a local machine"
 else
     "ERROR No Path "
     exit -1
