@@ -15,7 +15,7 @@ do
     k=`basename $i .fa`
     l=`basename $k .fasta`
     j=`basename $l .trimmed`
-    m=`echo $j | ses "s/.fa.*//"`
+    m=`echo $j | sed "s/.fa.*//"`
 # #    if [ !  -e $k.out ]
 # #    then
 # #        srun -A snic2015-10-12 --time=04:00:00 -n 1 -c 8 ~/git/PconsC3/extra/arne/MSA/run_PconsC3.bash  $i &> $j.out &
