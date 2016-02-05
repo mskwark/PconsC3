@@ -64,7 +64,7 @@ rootname=$seqbase
 cp $seqfile $workdir/
 
 
-rsync -q $rootname.gdca $rootname.0.02.plm20 $rootname.rr $SEQ.rsa $SEQ.rsa $rootname.ss2 $rootname.gneff $rootname.trimmed $rootname.PconsC3* $workdir/
+rsync -q $rootname.gdca $rootname.0.02.plm20 $rootname.rr $SEQ.rsa $SEQ.rsa $rootname.ss $rootname.ss2 $rootname.gneff $rootname.trimmed $rootname.PconsC3* $workdir/
 cd $workdir
 
 #check if we have a muktiple sequence alignment or a single sequence

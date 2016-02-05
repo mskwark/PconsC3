@@ -11,50 +11,51 @@
 
 for i in "$@"
 do
-    sleep 10
+    sleep 1
     k=`basename $i .fa`
     l=`basename $k .fasta`
     j=`basename $l .trimmed`
     m=`echo $j | ses "s/.fa.*//"`
-#    if [ !  -e $k.out ]
-#    then
-#        srun -A snic2015-10-12 --time=04:00:00 -n 1 -c 8 ~/git/PconsC3/extra/arne/MSA/run_PconsC3.bash  $i &> $j.out &
-#    fi
-      if [ !  -e $j.rr ]
-      then
-          srun --mem 96GB -A snic2015-10-12 --time=24:00:00 -n 1 -c 6 $HOME/git/PconsC3/extra/arne/MSA/runPhyCMAP.bash $m.fa &> $j-phycmap.out &
- 	 echo "srun --mem 96GB -A snic2015-10-12 --time=24:00:00 -n 1 -c 6 $HOME/git/PconsC3/extra/arne/MSA/runPhyCMAP.bash $j.fa &> $j-phycmap.out &"
-      fi
-      if [ !  -e $m.rsa ]
-      then
-          # srun -A snic2015-10-12 --time=00:15:00 -n 1 -c 6 $HOME/git/PconsC3/extra/arne/MSA/runnetsurfp.py $m &> $j-rsa.out &
-          echo "srun -A snic2015-10-12 --time=00:15:00 -n 1 -c 6 $HOME/git/PconsC3/extra/arne/MSA/runnetsurfp.py $m &> $j-rsa.out &"
-	  $HOME/git/PconsC3/extra/arne/MSA/runnetsurfp.py $m &> $j-rsa.out 
-	  ln -s $m.rsa $j.fa.rsa
-      fi
-      if [ !  -e $j.ss2 ]
-      then
-          srun -A snic2015-10-12 --time=00:30:00 -n 1 -c 6 $HOME/git/PconsC3/extra/arne/MSA/addss.pl $i &> $j-adss.out &
-          echo "srun -A snic2015-10-12 --time=00:30:00 -n 1 -c 6 $HOME/git/PconsC3/extra/arne/MSA/addss.pl $i &> $j-adss.out &"
-      fi
-      if [ !  -e $j.gdca ]
-      then
-          srun -A snic2015-10-12 --time=04:00:00 -n 1 -c 6 $HOME/git/PconsC3/rungdca.py $i &> $j-gdca.out &
-          echo "srun -A snic2015-10-12 --time=04:00:00 -n 1 -c 6 $HOME/git/PconsC3/rungdca.py $i &> $j-gdca.out &"
-      fi
+# #    if [ !  -e $k.out ]
+# #    then
+# #        srun -A snic2015-10-12 --time=04:00:00 -n 1 -c 8 ~/git/PconsC3/extra/arne/MSA/run_PconsC3.bash  $i &> $j.out &
+# #    fi
+       if [ !  -e $j.rr ]
+       then
+          srun --mem 120GB -A snic2015-10-12 --time=24:00:00 -n 1 -c 6 $HOME/git/PconsC3/extra/arne/MSA/runPhyCMAP.bash $m.fa &> $m-phycmap.out &
+  	 echo "srun --mem 120GB -A snic2015-10-12 --time=24:00:00 -n 1 -c 6 $HOME/git/PconsC3/extra/arne/MSA/runPhyCMAP.bash $m.fa &> $m-phycmap.out &"
+       fi
+       if [ !  -e $m.rsa ]
+       then
+           # srun -A snic2015-10-12 --time=00:15:00 -n 1 -c 6 $HOME/git/PconsC3/extra/arne/MSA/runnetsurfp.py $m &> $j-rsa.out &
+           echo "srun -A snic2015-10-12 --time=00:15:00 -n 1 -c 6 $HOME/git/PconsC3/extra/arne/MSA/runnetsurfp.py $m &> $j-rsa.out &"
+ 	  $HOME/git/PconsC3/extra/arne/MSA/runnetsurfp.py $m &> $j-rsa.out 
+ 	  ln -s $m.rsa $j.fa.rsa
+       fi
+       if [ !  -e $j.ss2 ]
+       then
+           srun --mem 120GB -A snic2015-10-12 --time=24:00:00 -n 1 -c 6 $HOME/git/PconsC3/extra/arne/MSA/addss.pl $i &> $j-adss.out &
+           echo "srun -A snic2015-10-12 --time=04:00:00 -n 1 -c 6 $HOME/git/PconsC3/extra/arne/MSA/addss.pl $i &> $j-adss.out &"
+       fi
+       if [ !  -e $j.gdca ]
+       then
+          srun --mem 120GB -A snic2015-10-12 --time=24:00:00 -n 1 -c 6 $HOME/git/PconsC3/rungdca.py $i &> $j-gdca.out &
+           echo "srun -A snic2015-10-12 --time=04:00:00 -n 1 -c 6 $HOME/git/PconsC3/rungdca.py $i &> $j-gdca.out &"
+       fi
+>>>>>>> 133155f95a40feb45217fa423fffefcb0eeba94a
       if [ !  -e $j.0.02.plm20 ]
       then
-          srun -A snic2015-10-12 --mem 96GB --time=48:00:00 -n 1 -c 6 $HOME/git/PconsC3/runplm.py $i &> $j-plm.out &
+          srun -A snic2015-10-12 --mem 120GB --time=48:00:00 -n 1 -c 6 $HOME/git/PconsC3/runplm.py $i &> $j-plm.out &
           echo "srun -A snic2015-10-12 --time=24:00:00 -n 1 -c 6 $HOME/git/PconsC3/runplm.py $i &> $j-plm.out &"
       fi
-     if [ !  -e $j.PconsC3.l5 ]
-     then
- 	if [ -e $j.gdca ]  && [ -e $j.0.02.plm20 ]   && [ -e $j.rr ]  && [ -e $j.fa.rsa ]  && [ -e  $j.ss2 ] && [ -e  $j.gneff ]  && [ -e $j.trimmed ]
- 	then
-             echo " srun -A snic2015-10-12 --time=24:00:00 -n 1 -c 6 $HOME/git/PconsC3/predict.py $j.gdca $j.0.02.plm20 $j.rr $j.fa.rsa $j.ss2 $j.gneff $j.trimmed $HOME/git/PconsC3/ -1 $j.PconsC3  &> $j-predict.out &"
-             srun -A snic2015-10-12 --time=24:00:00 -n 1 -c 6 $HOME/git/PconsC3/predict.py $j.gdca $j.0.02.plm20 $j.rr $j.fa.rsa $j.ss2 $j.gneff $j.trimmed $HOME/git/PconsC3/ -1 $j.PconsC3  &> $j-predict.out &
- 	else 
- 	    ls -l $j.gdca $j.0.02.plm20 $j.rr $j.fa.rsa $j.ss2 $j.gneff $j.trimmed 
- 	fi
-     fi
+      if [ !  -e $j.PconsC3.l5 ]
+      then
+  	if [ -e $j.gdca ]  && [ -e $j.0.02.plm20 ]   && [ -e $j.rr ]  && [ -e $j.fa.rsa ]  && [ -e  $j.ss2 ] && [ -e  $j.gneff ]  && [ -e $j.trimmed ]
+  	then
+              echo " srun -A snic2015-10-12 --time=24:00:00 -n 1 -c 6 $HOME/git/PconsC3/predict.py $j.gdca $j.0.02.plm20 $j.rr $j.fa.rsa $j.ss2 $j.gneff $j.trimmed $HOME/git/PconsC3/ -1 $j.PconsC3  &> $j-predict.out &"
+              srun -A snic2015-10-12 --mem 120GB  --time=48:00:00 -n 1 -c 6 $HOME/git/PconsC3/predict.py $j.gdca $j.0.02.plm20 $j.rr $j.fa.rsa $j.ss2 $j.gneff $j.trimmed $HOME/git/PconsC3/ -1 $j.PconsC3  &> $j-predict.out &
+  	else 
+  	    ls -l $j.gdca $j.0.02.plm20 $j.rr $j.fa.rsa $j.ss2 $j.gneff $j.trimmed 
+  	fi
+      fi
 done
