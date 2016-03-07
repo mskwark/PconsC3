@@ -12,6 +12,10 @@
 for i in "$@"
 do
     sleep 1
+    if [ -e $i.JH0.001.trimmed ]
+    then
+	i=$i.JH0.001.trimmed
+    fi
     k=`basename $i .fa`
     l=`basename $k .fasta`
     j=`basename $l .trimmed`
@@ -32,15 +36,19 @@ do
 	fi
     fi
     
-    shorttime="04:00:00"
+    shorttime="06:00:00"
     longtime="24:00:00"
     mem="120GB"
-
-    if [ ! -e $j.trimmed ]
+    
+    if [ ! -e $j.trimmed ] && [ ! -e $i.JH0.001.trimmed  ]
     then
-	if [ -e $j.a3m ] 
+	if [ -e $j.a3m ]
 	then
 	    ~/git/PconsC3/extra/arne/MSA/a3mToTrimmed.py $j.a3m > $j.trimmed
+	elif [ -e $j.JH0.001.a3m ]
+	then
+	    ~/git/PconsC3/extra/arne/MSA/a3mToTrimmed.py $j.JH0.001.a3m > $j.JH0.001.trimmed 
+
 	else
 	     srun -A snic2015-10-12 --time=$shorttime -n 1 -c 6 ~/git/PconsC3/extra/arne/MSA/runjackhmmer.py $i > $j-runjackhmmer.out &
 	fi
@@ -53,18 +61,18 @@ do
 	
 	if [ $length -gt 500 ] 
 	then
-	    shorttime="06:00:00"
-	    longtime="24:00:00"
+	    shorttime="08:00:00"
+	    longtime="48:00:00"
 	    mem="120GB"
 	else
-	    shorttime="01:00:00"
-	    longtime="06:00:00"
+	    shorttime="02:00:00"
+	    longtime="24:00:00"
 	    mem="64GB"
 	fi
 
 	if [ !  -e $j.rr ] && [ ! -e $m.rr ]
 	then
-            srun --mem 120GB -A snic2015-10-12 --time=$longtime -n 1 -c 6 $HOME/git/PconsC3/extra/arne/MSA/runPhyCMAP.bash $n &> $m-phycmap.out &
+            srun --mem $mem -A snic2015-10-12 --time=$longtime -n 1 -c 6 $HOME/git/PconsC3/extra/arne/MSA/runPhyCMAP.bash $n &> $m-phycmap.out &
   	    echo "srun --mem $mem -A snic2015-10-12 --time=$longtime -n 1 -c 6 $HOME/git/PconsC3/extra/arne/MSA/runPhyCMAP.bash $n &> $m-phycmap.out &"
 	fi
 	if [ !  -e $m.rsa ]
@@ -76,7 +84,7 @@ do
 	fi
 	if [ !  -e $j.ss2 ] && [ -e $j.trimmed  ]
 	then
-            srun --mem $mem -A snic2015-10-12 --time=$shorttime -n 1 -c 6 $HOME/git/PconsC3/extra/arne/MSA/addss.pl $i &> $j-adss.out &
+            srun  -A snic2015-10-12 --time=$shorttime -n 1 -c 6 $HOME/git/PconsC3/extra/arne/MSA/addss.pl $i &> $j-adss.out &
             echo "srun -A snic2015-10-12 --time=$shorttime -n 1 -c 6 $HOME/git/PconsC3/extra/arne/MSA/addss.pl $i &> $j-adss.out &"
 	fi
 	if [ !  -e $j.gdca ] && [ -e $j.trimmed  ]
@@ -86,7 +94,7 @@ do
 	fi
 	if [ !  -e $j.0.02.plm20 ]
 	then
-            srun -A snic2015-10-12 --mem $mem --time=$shorttime -n 1 -c 6 $HOME/git/PconsC3/runplm.py $i &> $j-plm.out &
+            srun -A snic2015-10-12 --mem $mem --time=$longtime -n 1 -c 6 $HOME/git/PconsC3/runplm.py $i &> $j-plm.out &
             echo "srun -A snic2015-10-12 --time=$longtime -n 1 -c 6 $HOME/git/PconsC3/runplm.py $i &> $j-plm.out &"
 	fi
 	if [ ! -e $j.rr ] && [ -e $m.rr ]
