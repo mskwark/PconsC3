@@ -61,12 +61,12 @@ do
 	
 	if [ $length -gt 500 ] 
 	then
-	    shorttime="08:00:00"
-	    longtime="48:00:00"
+	    shorttime="16:00:00"
+	    longtime="96:00:00"
 	    mem="120GB"
 	else
-	    shorttime="02:00:00"
-	    longtime="24:00:00"
+	    shorttime="08:00:00"
+	    longtime="48:00:00"
 	    mem="64GB"
 	fi
 
