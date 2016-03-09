@@ -11,7 +11,7 @@
 
 for i in "$@"
 do
-    sleep 1
+    sleep 10
     if [ -e $i.JH0.001.trimmed ]
     then
 	i=$i.JH0.001.trimmed
@@ -25,7 +25,7 @@ do
     then
 	echo "Using $n"
     else
-	m=`echo $j | sed "s/.fa.*//"`
+	m=`echo $j | sed "s/\.fa\..*//"`
 	n=$m.fa
 	if  [ -e $n ]
 	then
@@ -61,12 +61,12 @@ do
 	
 	if [ $length -gt 500 ] 
 	then
-	    shorttime="16:00:00"
-	    longtime="96:00:00"
-	    mem="120GB"
-	else
 	    shorttime="08:00:00"
 	    longtime="48:00:00"
+	    mem="64GB"
+	else
+	    shorttime="04:00:00"
+	    longtime="12:00:00"
 	    mem="64GB"
 	fi
 
