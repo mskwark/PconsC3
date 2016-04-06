@@ -109,6 +109,47 @@ elif os.path.exists("/pfs/nobackup/home/"):
 # Directory to PconsC3 scripts (i.e. this one)
     PconsC3 = '/home/a/arnee/git/PconsC3/'
 
+elif os.path.exists("/scratch/arne/"):
+    print "We are at local machine"
+    root = "/scratch/arne/PconsC2-extra/hhsuite-2.0.16-linux-x86_64/"
+### Jackhmmer executable ###
+#jackhmmer = root + 'dependencies/hmmer-3.0/src/jackhmmer'
+    jackhmmer = '/usr/local/bin/jackhmmer'
+    uniref = '/scratch/data/uniref90.fasta'
+
+### HHblits executable ###
+#hhblits = root + 'dependencies/hhsuite-2.0.16/bin/hhblits'
+    hhblits = '/scratch/arne/PconsC2-extra/hhsuite-2.0.16-linux-x86_64/bin/hhblits'
+    hhdatabase = '/scratch/data/hhsuite/hhsuite_dbs/uniprot20_2013_03/uniprot20_2013_03'
+
+### PSICOV executable ###
+#psicov = root + 'dependencies/psicov-1.11/psicov'
+    psicov = '/usr/local/bin/psicov2'
+#    psicov= '/pfs/nobackup/home/a/arnee/Software/PconsC2-extra/psicov2/psicov2'
+
+### NetSurfP executable ###
+#netsurf = root + 'dependencies/netsurfp-1.0/netsurfp'
+#    netsurf = '/pfs/nobackup/home/a/arnee/Software/PconsC2-extra/netsurfp-1.0/netsurfp'
+    netsurf = '/usr/local/bin/netsurfp'
+### PSIPRED executable ###
+#psipred = root + 'dependencies/psipred/runpsipred'
+#psipred = '/scratch/arne/PconsC2-extra/psipred/runpsipred'
+    psipred = '/usr/local/bin/psipred/bin/psipred'
+
+### MATLAB executable ###
+# Please set this variable to None if you don't have access to matlab. 
+# PconsFold will then try to use the compiled version. 
+#matlab = '/sw/apps/matlab/x86_64/8.1/bin/matlab'
+#    matlab = None
+    matlab= '/pdc/vol/matlab/r2012a/bin/matlab'
+
+### Path to MATLAB compiler ###
+# Only needed if matlab is not available.
+    matlabdir = '' 
+
+# Directory to PconsC3 scripts (i.e. this one)
+    PconsC3 = '/home/arnee/git/PconsC3/'
+
 ########################################################
 ###  Please do not change anything below this line   ###
 ########################################################
