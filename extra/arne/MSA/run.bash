@@ -11,7 +11,6 @@
 
 for i in "$@"
 do
-    sleep 10
     if [ -s $i.JH0.001.trimmed ]
     then
 	i=$i.JH0.001.trimmed
@@ -105,7 +104,8 @@ do
 	then
   	    if [ -s $j.gdca ]  && [ -s $j.0.02.plm20 ]   && [ -s $j.rr ]  && [ -s $j.fa.rsa ]  && [ -s  $j.ss2 ] && [ -s  $j.gneff ]  && [ -s $j.trimmed ]
   	    then
-		$HOME/git/PconsC3/predict.py $j.gdca $j.0.02.plm20 $j.rr $j.fa.rsa $j.ss2 $j.gneff $j.trimmed $HOME/git/PconsC3/ -1 $j.PconsC3  
+		time $HOME/git/PconsC3/predict.py $j.gdca $j.0.02.plm20 $j.rr $j.fa.rsa $j.ss2 $j.gneff $j.trimmed $HOME/git/PconsC3/ -1 $j.PconsC3  
+		time $HOME/git/PconsC3/predict-queue.py $j.gdca $j.0.02.plm20 $j.rr $j.fa.rsa $j.ss2 $j.gneff $j.trimmed $HOME/git/PconsC3/ -1 4 $j.PconsC3  
   	    else 
   		ls -l $j.gdca $j.0.02.plm20 $j.rr $j.fa.rsa $j.ss2 $j.gneff $j.trimmed 
   	    fi
