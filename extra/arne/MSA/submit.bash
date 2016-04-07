@@ -62,24 +62,27 @@ do
 	if [ $length -gt 500 ] 
 	then
 	    shorttime="08:00:00"
-	    longtime="48:00:00"
+	    longtime="96:00:00"
 	    mem="120GB"
 	else
-	    shorttime="04:00:00"
+	    shorttime="00:30:00"
 	    longtime="12:00:00"
 	    mem="64GB"
 	fi
 
 	if [ !  -s $j.rr ] && [ ! -s $m.rr ]
 	then
-#            srun --mem $mem -A snic2015-10-12 --time=$longtime -n 1 -c 6 $HOME/git/PconsC3/extra/arne/MSA/runPhyCMAP.bash $n &> $m-phycmap.out &
+            srun --mem $mem -A snic2015-10-12 --time=$longtime -n 1 -c 6 $HOME/git/PconsC3/extra/arne/MSA/runPhyCMAP.bash $n &> $m-phycmap.out &
   	    echo "srun --mem $mem -A snic2015-10-12 --time=$longtime -n 1 -c 6 $HOME/git/PconsC3/extra/arne/MSA/runPhyCMAP.bash $n &> $m-phycmap.out &"
 	fi
-	if [ !  -s $m.rsa ]
-	then
-#            srun -A snic2015-10-12 --time=$shorttime -n 1 -c 6 $HOME/git/PconsC3/extra/arne/MSA/runnetsurfp.py $n &> $j-rsa.out &
-            echo "srun -A snic2015-10-12 --time=00:15:00 -n 1 -c 6 $HOME/git/PconsC3/extra/arne/MSA/runnetsurfp.py $n &> $j-rsa.out &"
+	if [  ! -s $j.fa.rsa ]
+ 	then
+            #srun -A snic2015-10-12 --time=$shorttime -n 1 -c 6 $HOME/git/PconsC3/extra/arne/MSA/runnetsurfp.py $n &> $j-rsa.out &
+            echo "srun -A snic2015-10-12 --time=$shorttime -n 1 -c 6 $HOME/git/PconsC3/extra/arne/MSA/runnetsurfp.py $n &> $j-rsa.out &"
  	    # $HOME/git/PconsC3/extra/arne/MSA/runnetsurfp.py $n &> $j-rsa.out 
+	fi
+	if [ !  -e $m.rsa ] && [  -s $j.fa.rsa ]
+ 	then
  	    ln -s $m.rsa $j.fa.rsa
 	fi
 	if [ !  -s $j.ss2 ] && [ -s $j.trimmed  ]
