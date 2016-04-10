@@ -1,25 +1,20 @@
 #!/usr/bin/env python2.7
-
-import joblib
+import os
 import sys
-import os, random, time
+import time
+import random
+
 import numpy as np
-from Queue import Queue
-from threading import Thread
+import joblib
 
-
-#forestlocation = '/dev/shm/'
-
-# maximum time per layer
-maxtime = pow(10,6)
+import _predict_parallel
 
 # fraction of trees to use (prediction time scales linearly with the number of trees, 
 # while expected precision is roughly the same for values > 0.3
-
 treedepth = 100
 treefraction = 1
 
-if len(sys.argv) != 12:
+if len(sys.argv) not in (11, 12):
     print 'Usage: ' + sys.argv[0] + ' <files>'
     print 'That is:'
     print ' GaussDCA prediction'
@@ -31,28 +26,27 @@ if len(sys.argv) != 12:
     print ' Alignment'
     print ' Forest Locations (e.g. /dev/shm/)'
     print ' MaxDepth'
-    print ' numthreads'
     print ' Outfile'
-    sys.exit(1)
+    print ' Number of threads (default 1)'
+    exit()
 
 files = sys.argv[1:]
-#maxdepth = -1
-maxdepth = files[8]
-numthreads = int(files[9])
+maxdepth = int(files[8])
+
+if len(sys.argv) == 11:
+    num_threads = 1
+else:
+    num_threads = int(sys.argv[-1])
 
 if int(maxdepth) <= 0:
     forestlocation = files[7] + '/tlayer{:d}'
 else:
     forestlocation = files[7] + '/tlayer{:d}-' + str(maxdepth)
 
-for i in range(5):
-    abort = False
+for i in xrange(5):
     if not os.path.exists(forestlocation.format(i) + '/tree.list'.format(i)):
         sys.stderr.write(forestlocation.format(i) + '/tree.list'.format(i))
-        sys.stderr.write('Forest data for layer {:d} is missing.\n'.format(i))
-        abort = True
-    if abort:
-        sys.exit(0)
+        raise IOError('Forest data for layer {:d} is missing.\n'.format(i))
 
 firststart = time.time()
 
@@ -105,7 +99,7 @@ def parsePSSM(alignment):
             continue
         seqcount += 1
         coverage.append( (len(x) - x.count('-'))/float(len(x)))
-        for i in range(len(x)):
+        for i in xrange(len(x)):
             try:
                 freqs[i][x[i]] += 1 
             except:
@@ -147,22 +141,14 @@ def parseContacts(f):
     for l in open(f):
         x = l.split()
         if len(x) != 3:
-            sys.stderr.write('Incorrect format for ' + f)
-            sys.exit(1)
+            raise IOError('Incorrect format for ' + f)
         if float(x[-1]) < 8:
             contacts.add( (int(x[0]), int(x[1])) )
     return contacts
 
-selected = set()
 contacts = {}
-X = []
-Y = []
 maxres = -1
-outfile = files[10]
-
-
-if os.path.exists(outfile):
-    pass
+outfile = files[9]
 
 sys.stderr.write('Doing ' + outfile + '\n')
 accessibility = parseNetSurfP(files[3])
@@ -174,7 +160,7 @@ coverage = pssm[2]
 pssm = pssm[0]
 
 selected = set()
-for index in range(3):
+for index in xrange(3):
     contacts[index] = {}
     d = files[index]
     r = []
@@ -189,8 +175,7 @@ for index in range(3):
         elif d.find('.plm') > -1:
             x = m.split(',')
             if len(x) != 3:
-                print d + ' has wrong format!'
-                sys.exit(1)
+                raise IOError(d + ' has wrong format!')
         else:
             x = m.split()
             if len(x) < 3 or x[2] != '0' or x[3] != '8':
@@ -216,39 +201,39 @@ for index in range(3):
 
 clist = []
 for c in contacts[0].keys():
-    q = [ c ]
+    q = [c]
     for i in contacts.keys():
         try:
-            q.append( contacts[i][c] )
+            q.append(contacts[i][c])
         except:
-            q.append( -3 )
+            q.append(-3)
     clist.append(q)
 
 selected2 = set()
 for i in contacts.keys():
-    clist.sort(key = lambda x: -x[i+1])
+    clist.sort(key=lambda x: -x[i+1])
     counter = -1
     c = 0
     while counter < maxres:
         j = clist[c]
         selected2.add(j[0])
-        c+=1
+        c += 1
         if abs(j[0][0] - j[0][1]) > 4:
             counter += 1
 
 maxscores = []
 meantop = []
 stdtop = []
-for index in range(3):
-        maxscores.append(max(contacts[index].values()))
-        q = []
-        for s in list(selected2):
-                try:
-                        q.append(contacts[index][s])
-                except:
-                        pass
-        meantop.append(np.mean(q))
-        stdtop.append(np.std(q))
+for index in xrange(3):
+    maxscores.append(max(contacts[index].values()))
+    q = []
+    for s in list(selected2):
+        try:
+            q.append(contacts[index][s])
+        except:
+            pass
+    meantop.append(np.mean(q))
+    stdtop.append(np.std(q))
 
 selected = list(selected)
 
@@ -265,12 +250,7 @@ start = time.time()
 
 for s in selected:
     count += 1
-    if count % 100 == 0 and sys.stderr.isatty() and sys.stdout.isatty(): # Trying to make it not printin batch submissions (but does not realluy work)
-#        sys.stderr.write('\rProgress: [' + '#' * (80*count/allcount) + ' ' * (80*(allcount-count)/allcount) + ']')
-        now = time.time()
-#        sys.stderr.write('Time remaining: {:7.1f}s'.format( (allcount-count) * (now-start)/count ) )
-    q = []
-    q.append(abs(s[0]-s[1]))
+    q = [abs(s[0]-s[1])]
 
     for ss in stats:
         q.append(ss)
@@ -281,9 +261,9 @@ for s in selected:
     q.append(maxscores[1])
     q.append(maxscores[2])
 
-    for i in range(-5, 6):
-        for j in range(-5, 6):
-            for index in range(3):
+    for i in xrange(-5, 6):
+        for j in xrange(-5, 6):
+            for index in xrange(3):
                 try:
                     q.append(contacts[index][(s[0]+i, s[1]+j)])
                     q.append((contacts[index][(s[0]+i, s[1]+j)] - meantop[index])/stdtop[index])
@@ -291,29 +271,29 @@ for s in selected:
                     q.append(0)
                     q.append(0)
 
-        for i in range(-4, 5):
+        for i in xrange(-4, 5):
                 try:
-                        q.extend(SSdict[s[0]+i] )
+                        q.extend(SSdict[s[0]+i])
                 except:
-                        q.extend([0,0,0])
+                        q.extend((0, 0, 0))
 
-        for i in range(-4, 5):
+        for i in xrange(-4, 5):
                 try:
-                        q.extend(SSdict[s[1]+i] )
+                        q.extend(SSdict[s[1]+i])
                 except:
-                        q.extend([0,0,0])
+                        q.extend((0, 0, 0))
     
-    for i in range(-4, 5):
+    for i in xrange(-4, 5):
         try:
-            q.extend(accessibility[s[0]+i] )
+            q.extend(accessibility[s[0] + i])
         except:
-            q.extend([0,0,0,0,0])
+            q.extend((0, 0, 0, 0, 0))
     
-    for i in range(-4, 5):
+    for i in xrange(-4, 5):
         try:
-            q.extend(accessibility[s[1]+i] )
+            q.extend(accessibility[s[1]+i])
         except:
-            q.extend([0,0,0,0,0])
+            q.extend((0, 0, 0, 0, 0))
 
     q.extend(pssm[s[0]])
     q.extend(pssm[s[1]])
@@ -323,94 +303,67 @@ for s in selected:
 sys.stderr.write('\n')
 sys.stderr.flush()
 
-def predict(dir, X):
+
+def predict(dir, X_pred):
     if not os.path.exists(dir + '/tree.list'):
-        sys.stderr.write('Directory {:s} does not contain proper random forest!\n'.format(dir))
-        sys.exit(0)
-    os.system('vmtouch -tq '+dir+' 2>/dev/null & ')
+        raise IOError('Directory {:s} does not contain proper random forest!\n'.format(dir))
+
     trees = open(dir + '/tree.list').read().strip().split('\n')
     random.shuffle(trees)
     trees = trees[:int(len(trees)*treefraction)]
-    global predictions 
-    predictions = np.zeros(len(X))
-    count = 0
-    allcount = len(trees)
-    ccc = 0.
-    loadtime = 0.
-    start = time.time()
+    predictions = np.zeros(len(X_pred))
+    X_pred = np.asarray(X_pred)
 
-    q = Queue()
-    for i in range(numthreads):
-        worker = Thread(target=treequeue,args=(i,dir,X,q,))
-        worker.setDaemon(True)
-        worker.start()
-
+    trunks = []
+    leafs = []
     for t in trees:
-        q.put(t)
-        count += 1            
-    q.join()       # block until all tasks are done
-    os.system('vmtouch -te '+dir+' 2>/dev/null & ')
-    
-    predictions = predictions/count
+        t = joblib.load(dir + '/' + t.split('/')[-1])[:5]
+        trunk = np.asarray(t[:4], dtype=np.int64)
+        leaf = t[4]
+        trunks.append(trunk)
+        leafs.append(leaf)
+
+    trunks_ = np.zeros((len(trunks),) + max(trunks, key=lambda x: x.shape).shape, dtype=np.int64)
+    for i, t in enumerate(trunks):
+        trunks_[i, :t.shape[0], :t.shape[1]] = t
+
+    leafs_ = np.zeros((len(leafs),) + max(leafs, key=lambda x: x.shape).shape, dtype=np.float64)
+    for i, t in enumerate(leafs):
+        s = t.shape
+        leafs_[i, :s[0], :s[1], :s[2]] = t
+    del leafs, trunks
+
+    _predict_parallel.predict(trunks_, leafs_, X_pred, predictions, num_threads=num_threads)
     print predictions
     return predictions
-
-
-def treequeue(j,dir,X,q):
-    while True:
-        tree= q.get()
-        try:
-#            print "Tree: ",j,dir + '/' + tree.split('/')[-1]
-            t = joblib.load(dir + '/' + tree.split('/')[-1])
-        except:
-            print "ERROR"
-        for i in range(len(X)):
-#            print i,
-            rrr = predict_tree(t, X[i])
-            predictions[i] += rrr
-        q.task_done()
-
-
-def predict_tree(tree, q):
-    v = [0,0]
-    i = 0
-    while i >= 0:
-        if q[tree[0][i]] <= tree[1][i]:
-            j = tree[2][i]
-        else:
-            j = tree[3][i]
-        if j < 0:
-            v = tree[4][i][0]
-        i = j
-    return float(v[1])/sum(v)
 
 # first layer
 sys.stderr.write('\nPredicting base layer:\n')
 p = predict(forestlocation.format(0), X)
-of = open(outfile + '.l0', 'w')
-previouslayer = {} 
+previouslayer = {}
 
-for t in range(len(p)):
-    of.write('{:d} {:d} {:7.5f}\n'.format(selected[t][0], selected[t][1], p[t]))
-    try:
-        previouslayer[selected[t][0]][selected[t][1]] = p[t]
-    except:
-        previouslayer[selected[t][0]] = {}
-        previouslayer[selected[t][0]][selected[t][1]] = p[t]
-of.close()
+with open(outfile + '.l0', 'w') as of:
+    for t in xrange(len(p)):
+        of.write('{:d} {:d} {:7.5f}\n'.format(selected[t][0], selected[t][1], p[t]))
+        try:
+            previouslayer[selected[t][0]][selected[t][1]] = p[t]
+        except:
+            previouslayer[selected[t][0]] = {}
+            previouslayer[selected[t][0]][selected[t][1]] = p[t]
+
 
 Xp = X
 Yp = selected
-for layer in range(1,6):
+for layer in xrange(1, 6):
     X = []
     sys.stderr.write('\nPredicting convolution layer {:d}:\n'.format(layer))
-    for p in range(len(Xp)):
+    for p in xrange(len(Xp)):
         y = Yp[p]
         q = list(Xp[p])
-        for i in range(-5,6):
-            for j in range(-5,6):
+        for i in xrange(-5, 6):
+            for j in xrange(-5, 6):
                 try:
-                    q.append(previouslayer[y[0]+i][y[1] + j])
+                    q.append(previouslayer[y[0] + i][y[1] + j])
                 except:     
                     q.append(-3)
         X.append(q)
@@ -418,14 +371,13 @@ for layer in range(1,6):
     p = predict(forestlocation.format(layer), X)
 
     previouslayer = {}
-    of = open(outfile + '.l{:d}'.format(layer), 'w')
-    for t in range(len(p)):
-        of.write('{:d} {:d} {:7.5f}\n'.format(Yp[t][0], Yp[t][1], p[t]))
-        try:
-            previouslayer[Yp[t][0]][Yp[t][1]] = p[t]
-        except:
-            previouslayer[Yp[t][0]] = {}
-            previouslayer[Yp[t][0]][Yp[t][1]] = p[t]
-    of.close()
+    with open(outfile + '.l{:d}'.format(layer), 'w') as of:
+        for t in xrange(len(p)):
+            of.write('{:d} {:d} {:7.5f}\n'.format(Yp[t][0], Yp[t][1], p[t]))
+            try:
+                previouslayer[Yp[t][0]][Yp[t][1]] = p[t]
+            except:
+                previouslayer[Yp[t][0]] = {}
+                previouslayer[Yp[t][0]][Yp[t][1]] = p[t]
 
 sys.stderr.write('\n\nSuccesfully completed in {:7.1f} seconds\n'.format(time.time() - firststart))
