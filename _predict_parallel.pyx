@@ -3,6 +3,7 @@ cimport cython
 from cython cimport parallel
 
 @cython.boundscheck(False)
+@cython.wraparound(False)
 @cython.cdivision(True)
 cdef inline double predict_tree(long[:, ::1] tree,  double[:, :, ::1] leaf, double[::1] q) nogil:
     cdef double r = 0
@@ -16,13 +17,11 @@ cdef inline double predict_tree(long[:, ::1] tree,  double[:, :, ::1] leaf, doub
         if j < 0:
             saved_i = i
         i = j
-    r = leaf[saved_i, 0, 1] / (leaf[saved_i, 0, 1] + leaf[saved_i, 0, 0])
+    r = leaf[saved_i, 0, 1] / (leaf[saved_i, 0, 1] + leaf[saved_i, 0, 0] + 0.0001)
     return r
 
 
-@cython.boundscheck(False)
-@cython.wraparound(False)
-@cython.cdivision(True)
+
 def predict(long[:, :, ::1] trees, double[:, :, :, ::1] leafs, double[:, ::1] X,
             double[::1] predictions, int num_threads):
     if num_threads == 1:
@@ -42,10 +41,11 @@ cdef void _predict_serial(long[:, :, ::1] trees, double[:, :, :, ::1] leafs, dou
     cdef double s
     n = X.shape[0]
     n_trees = trees.shape[0]
+
     for i in xrange(n):
         s = 0.
         for j in xrange(n_trees):
-            s += predict_tree(trees[i, :, :], leafs[i, :, :, :], X[i, :])
+            s += predict_tree(trees[j, :, :], leafs[j, :, :, :], X[i, :])
         predictions[i] = s / n_trees
 
 
@@ -63,5 +63,5 @@ cdef void _predict_parallel(long[:, :, ::1] trees, double[:, :, :, ::1] leafs, d
         s = 0.
         for j in xrange(n_trees):
             # s += means reduction variable, don't use it
-            s = s + predict_tree(trees[i, :, :], leafs[i, :, :, :], X[i, :])
+            s = s + predict_tree(trees[j, :, :], leafs[j, :, :, :], X[i, :])
         predictions[i] = s / n_trees

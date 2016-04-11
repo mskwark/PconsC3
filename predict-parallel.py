@@ -3,6 +3,7 @@ import os
 import sys
 import time
 import random
+import warnings
 
 import numpy as np
 import joblib
@@ -35,6 +36,7 @@ maxdepth = int(files[8])
 
 if len(sys.argv) == 11:
     num_threads = 1
+    warnings.warn(RuntimeWarning('Using default number of threads {}'.format(num_threads)))
 else:
     num_threads = int(sys.argv[-1])
 
@@ -323,11 +325,18 @@ def predict(dir, X_pred):
         trunks.append(trunk)
         leafs.append(leaf)
 
-    trunks_ = np.zeros((len(trunks),) + max(trunks, key=lambda x: x.shape).shape, dtype=np.int64)
+    shape = [None, None]
+    for i in xrange(2):
+        shape[i] = max(t.shape[i] for t in trunks)
+
+    trunks_ = np.zeros([len(trunks),] + shape, dtype=np.int64)
     for i, t in enumerate(trunks):
         trunks_[i, :t.shape[0], :t.shape[1]] = t
 
-    leafs_ = np.zeros((len(leafs),) + max(leafs, key=lambda x: x.shape).shape, dtype=np.float64)
+    shape = [None, None, None]
+    for i in xrange(3):
+        shape[i] = max(l.shape[i] for l in leafs)
+    leafs_ = np.zeros([len(leafs)] + shape, dtype=np.float64)
     for i, t in enumerate(leafs):
         s = t.shape
         leafs_[i, :s[0], :s[1], :s[2]] = t
@@ -364,7 +373,7 @@ for layer in xrange(1, 6):
             for j in xrange(-5, 6):
                 try:
                     q.append(previouslayer[y[0] + i][y[1] + j])
-                except:     
+                except:
                     q.append(-3)
         X.append(q)
 
