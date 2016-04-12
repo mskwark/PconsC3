@@ -58,7 +58,7 @@ cdef void _predict_parallel(long[:, :, ::1] trunks, double[:, ::1] leafs, double
     n = x.shape[0]
     n_trees = trunks.shape[0]
 
-    for i in parallel.prange(n, num_threads=num_threads, chunksize=20, schedule='static'):
+    for i in parallel.prange(n, num_threads=num_threads, chunksize=100, schedule='static', nogil=True):
         s = 0.
         for j in xrange(n_trees):
             s = s + predict_tree(trunks[j, :, :], leafs[j, :], compare[j, :], x[i, :])
