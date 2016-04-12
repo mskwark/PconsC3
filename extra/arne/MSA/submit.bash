@@ -17,28 +17,42 @@ do
 	i=$i.JH0.001.trimmed
     fi
     k=`basename $i .fa`
-    l=`basename $k .fasta`
+    m=`basename $k .seq`
+    l=`basename $m .fasta`
     j=`basename $l .trimmed`
-    m=`echo $j | sed "s/.fasta.*//"`
+    m=`echo $j | sed "s/.fasta.*//" | sed "s/.seq.*//"  | sed "s/.fa.*//"`
     n=$m.fasta
     if  [ -s $n ]
     then
 	echo "Using $n"
     else
-	m=`echo $j | sed "s/\.fa\..*//"`
 	n=$m.fa
 	if  [ -s $n ]
 	then
 	    echo "Using $n"
 	else
-	    echo "ERROR: Not found FASTa file $i $m $n"
-	    exit 0
+	    n=$m.fasta
+	    if  [ -s $n ]
+	    then
+		echo "Using $n"
+		n=$m.fa
+	    else
+		n=$m.seq
+		if  [ -s $n ]
+		then
+		    echo "Using $n"
+		else
+		    echo "ERROR: Not found FASTa file $i $m $n"
+		    exit 0
+		fi
+	    fi
 	fi
     fi
     
-    shorttime="06:00:00"
-    longtime="24:00:00"
-    mem="120GB"
+    minitime="00:30:00"
+    shorttime="04:00:00"
+    longtime="12:00:00"
+    mem="64GB"
     
     if [ ! -s $j.trimmed ] && [ ! -s $i.JH0.001.trimmed  ]
     then
@@ -50,7 +64,7 @@ do
 	    ~/git/PconsC3/extra/arne/MSA/a3mToTrimmed.py $j.JH0.001.a3m > $j.JH0.001.trimmed 
 
 	else
-	     srun -A snic2015-10-12 --time=$shorttime -n 1 -c 6 ~/git/PconsC3/extra/arne/MSA/runjackhmmer.py $i > $j-runjackhmmer.out &
+	     srun -A snic2015-10-12 --time=$minitime -n 1 -c 6 ~/git/PconsC3/extra/arne/MSA/runjackhmmer.py $i > $j-runjackhmmer.out &
 	fi
     else
 # #    if [ !  -s $k.out ]
@@ -65,11 +79,6 @@ do
 	    shorttime="08:00:00"
 	    longtime="48:00:00"
 	    mem="120GB"
-	else
-	    minitime="00:15:00"
-	    shorttime="04:00:00"
-	    longtime="12:00:00"
-	    mem="64GB"
 	fi
 
 	if [ !  -s $j.rr ] && [ ! -s $m.rr ]
