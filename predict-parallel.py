@@ -4,6 +4,7 @@ import sys
 import time
 import random
 import warnings
+import argparse
 
 import numpy as np
 import joblib
@@ -15,35 +16,28 @@ import _predict_parallel
 treedepth = 100
 treefraction = 1
 
-if len(sys.argv) not in (11, 12):
-    print 'Usage: ' + sys.argv[0] + ' <files>'
-    print 'That is:'
-    print ' GaussDCA prediction'
-    print ' plmDCA.jl predictions'
-    print ' ML contact predictions'
-    print ' NetSurf RSA'
-    print ' SS file'
-    print ' Alignment stats'
-    print ' Alignment'
-    print ' Forest Locations (e.g. /dev/shm/)'
-    print ' MaxDepth'
-    print ' Outfile'
-    print ' Number of threads (default 1)'
-    exit()
+parser = argparse.ArgumentParser()
+parser.add_argument('GaussDCA')
+parser.add_argument('plmDCA')
+parser.add_argument('MLContactPrediction')
+parser.add_argument('NetsurfRSA')
+parser.add_argument('SSfile')
+parser.add_argument('AlignmentStats')
+parser.add_argument('Alignment')
+parser.add_argument('ForestLocations')
+parser.add_argument('MaxDepth', type=int)
+parser.add_argument('Outfile')
+parser.add_argument('NumberThreads', type=int, nargs='?', default=1)
+args = parser.parse_args()
 
-files = sys.argv[1:]
-maxdepth = int(files[8])
+maxdepth = args.MaxDepth
 
-if len(sys.argv) == 11:
-    num_threads = 1
-    warnings.warn(RuntimeWarning('Using default number of threads {}'.format(num_threads)))
-else:
-    num_threads = int(sys.argv[-1])
+num_threads = args.NumberThreads
 
 if int(maxdepth) <= 0:
-    forestlocation = files[7] + '/tlayer{:d}'
+    forestlocation = args.ForestLocations + '/tlayer{:d}'
 else:
-    forestlocation = files[7] + '/tlayer{:d}-' + str(maxdepth)
+    forestlocation = args.ForestLocations + '/tlayer{:d}-' + str(maxdepth)
 
 for i in xrange(5):
     if not os.path.exists(forestlocation.format(i) + '/tree.list'.format(i)):
@@ -51,6 +45,7 @@ for i in xrange(5):
         raise IOError('Forest data for layer {:d} is missing.\n'.format(i))
 
 firststart = time.time()
+
 
 def parsePSIPRED(f):
     SSdict = {}
@@ -65,7 +60,8 @@ def parsePSIPRED(f):
         i = int(y[0])
         SSdict[i] = [float(y[3]), float(y[4]), float(y[5])]
     return SSdict
-        
+
+
 def parseNetSurfP(f):
     netSurfdict = {}
     for l in open(f).readlines():
@@ -77,15 +73,16 @@ def parseNetSurfP(f):
             y = ['E']
             y.extend(x)
             x = y
-        for y in [4,6,7, 8, 9]:
-            al.append(float(x[y]) )
-        netSurfdict[ int(x[3] )] = al
+        for y in [4, 6, 7, 8, 9]:
+            al.append(float(x[y]))
+        netSurfdict[int(x[3])] = al
     return netSurfdict
+
 
 def parsePSSM(alignment):
     pssm = {}
     one2number = 'ARNDCEQGHILKMFPSTWYV-'
-    bi = [ 0.0825, 0.0553, 0.0406, 0.0545, 0.0137, 0.0393, 0.0675, 0.0707, 0.0227, 0.0595, 0.0966, 0.0584, 0.0242, 0.0386, 0.0470, 0.0657, 0.0534, 0.0108, 0.0292, 0.0687 ]
+    bi = [0.0825, 0.0553, 0.0406, 0.0545, 0.0137, 0.0393, 0.0675, 0.0707, 0.0227, 0.0595, 0.0966, 0.0584, 0.0242, 0.0386, 0.0470, 0.0657, 0.0534, 0.0108, 0.0292, 0.0687]
     b = {}
     for i in one2number[:-1]:
         b[i] = bi[one2number.find(i)] 
@@ -118,25 +115,27 @@ def parsePSSM(alignment):
         q = []
         for l in one2number:
             try:
-                q.append(np.log( freqs[i][l]/(b[l] * seqcount)))
-                q.append(freqs[i][l]/(b[l] * seqcount) * np.log( freqs[i][l]/(b[l] * seqcount)))
-                entropy.append(freqs[i][l]/(b[l] * seqcount) * np.log( freqs[i][l]/(b[l] * seqcount)))
-            except Exception as e:
-                q.append(np.log( 0.1/(b[l] * seqcount)))
+                q.append(np.log(freqs[i][l] / (b[l] * seqcount)))
+                q.append(freqs[i][l] / (b[l] * seqcount) * np.log(freqs[i][l] / (b[l] * seqcount)))
+                entropy.append(freqs[i][l] / (b[l] * seqcount) * np.log(freqs[i][l] / (b[l] * seqcount)))
+            except:
+                q.append(np.log(0.1 / (b[l] * seqcount)))
                 q.append(0)
                 entropy.append(0)
         pssm[i+1] = q
-    return (pssm, np.mean(entropy), [np.min(coverage), np.max(coverage), np.mean(coverage), np.median(coverage)])
+    return pssm, np.mean(entropy), [np.min(coverage), np.max(coverage), np.mean(coverage), np.median(coverage)]
+
 
 def parseStats(f):
     stats = []
     ff = open(f).readlines()
     if len(ff) != 6:
-        sys.stderr.write(f + ' has incorrect format!\n')
+        warnings.warn(RuntimeWarning(f + ' has incorrect format!'))
         return [-1, -1, -1, -1, -1, -1]
     for l in ff:
         stats.append(float(l.split()[-1]))
     return stats
+
 
 def parseContacts(f):
     contacts = set()
@@ -150,24 +149,24 @@ def parseContacts(f):
 
 contacts = {}
 maxres = -1
-outfile = files[9]
-
+outfile = args.Outfile
 sys.stderr.write('Doing ' + outfile + '\n')
-accessibility = parseNetSurfP(files[3])
-SSdict = parsePSIPRED(files[4])
-stats  = parseStats(files[5])
-pssm = parsePSSM(files[6])
+accessibility = parseNetSurfP(args.NetsurfRSA)
+SSdict = parsePSIPRED(args.SSfile)
+stats = parseStats(args.AlignmentStats)
+pssm = parsePSSM(args.Alignment)
 entropy = pssm[1]
 coverage = pssm[2]
 pssm = pssm[0]
 
 selected = set()
+cmap_preds = (args.GaussDCA, args.plmDCA, args.MLContactPrediction)
 for index in xrange(3):
     contacts[index] = {}
-    d = files[index]
+    d = cmap_preds[index]
     r = []
     if not os.path.exists(d):
-        sys.stderr.write(d + ' does not exist!\n')
+        warnings.warn(RuntimeWarning(d + ' does not exist!'))
         continue
     infile = open(d).readlines()
     for m in infile:
@@ -199,7 +198,7 @@ for index in xrange(3):
         contacts[index][(aa2, aa1)] = score
         if not aa2 > aa1:
             continue
-        selected.add((aa1,aa2))
+        selected.add((aa1, aa2))
 
 clist = []
 for c in contacts[0].keys():
@@ -238,7 +237,6 @@ for index in xrange(3):
     stdtop.append(np.std(q))
 
 selected = list(selected)
-
 selected.sort()
 lastseeny = -1
 
@@ -317,32 +315,33 @@ def predict(dir, X_pred):
     X_pred = np.asarray(X_pred)
 
     trunks = []
+    compares = []
     leafs = []
+
     for t in trees:
         t = joblib.load(dir + '/' + t.split('/')[-1])[:5]
-        trunk = np.asarray(t[:4], dtype=np.int64)
-        leaf = t[4]
-        trunks.append(trunk)
-        leafs.append(leaf)
+        trunks.append(np.vstack((t[0], t[2:4])))
+        compares.append(t[1])
+        leaf = t[4][:, 0, :]
+        leafs.append(leaf[:, 1] / leaf.sum(axis=1))
 
-    shape = [None, None]
-    for i in xrange(2):
-        shape[i] = max(t.shape[i] for t in trunks)
+    shape = (len(trunks), max(t.shape[0] for t in trunks), max(t.shape[1] for t in trunks))
+    trunks_ = np.full(shape, np.nan, dtype=np.int64)
 
-    trunks_ = np.zeros([len(trunks),] + shape, dtype=np.int64)
     for i, t in enumerate(trunks):
         trunks_[i, :t.shape[0], :t.shape[1]] = t
 
-    shape = [None, None, None]
-    for i in xrange(3):
-        shape[i] = max(l.shape[i] for l in leafs)
-    leafs_ = np.zeros([len(leafs)] + shape, dtype=np.float64)
-    for i, t in enumerate(leafs):
-        s = t.shape
-        leafs_[i, :s[0], :s[1], :s[2]] = t
-    del leafs, trunks
+    leafs_ = np.full((len(leafs), max(l.shape[0] for l in leafs)), np.nan, dtype=np.float64)
 
-    _predict_parallel.predict(trunks_, leafs_, X_pred, predictions, num_threads=num_threads)
+    for i, t in enumerate(leafs):
+        leafs_[i, :t.shape[0]] = t
+
+    compares_ = np.full((len(compares), max(c.shape[0] for c in compares)), np.nan, dtype=np.float64)
+    for i, t in enumerate(compares):
+        compares_[i, :t.shape[0]] = t
+    del leafs, trunks, compares
+
+    _predict_parallel.predict(trunks_, leafs_, compares_, X_pred, predictions, num_threads=num_threads)
     print predictions
     return predictions
 
