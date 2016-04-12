@@ -11,16 +11,12 @@
 
 for i in "$@"
 do
-    sleep 10
     if [ -s $i.JH0.001.trimmed ]
     then
 	i=$i.JH0.001.trimmed
     fi
-    k=`basename $i .fa`
-    m=`basename $k .seq`
-    l=`basename $m .fasta`
-    j=`basename $l .trimmed`
-    m=`echo $j | sed "s/.fasta.*//" | sed "s/.seq.*//"  | sed "s/.fa.*//"`
+    j=`basename $i .trimmed`
+    m=`echo $i | sed "s/.fasta.*//" | sed "s/.seq.*//"  | sed "s/.fa.*//"`
     n=$m.fasta
     if  [ -s $n ]
     then
@@ -86,12 +82,12 @@ do
             srun --mem $mem -A snic2015-10-12 --time=$longtime -n 1 -c 6 $HOME/git/PconsC3/extra/arne/MSA/runPhyCMAP.bash $n &> $m-phycmap.out &
   	    echo "srun --mem $mem -A snic2015-10-12 --time=$longtime -n 1 -c 6 $HOME/git/PconsC3/extra/arne/MSA/runPhyCMAP.bash $n &> $m-phycmap.out &"
 	fi
-	if [ !  -s $m.rsa ]
+	if [ !  -s $m.rsa ] && [ ! $s $i.rsa ]
 	then
             srun -A snic2015-10-12 --time=$minitime -n 1 -c 6 $HOME/git/PconsC3/extra/arne/MSA/runnetsurfp.py $n &> $j-rsa.out &
             echo "srun -A snic2015-10-12 --time=$minitime -n 1 -c 6 $HOME/git/PconsC3/extra/arne/MSA/runnetsurfp.py $n &> $j-rsa.out &"
  	    # $HOME/git/PconsC3/extra/arne/MSA/runnetsurfp.py $n &> $j-rsa.out 
- 	    ln -s $m.rsa $j.fa.rsa
+ 	    ln -s $m.rsa $i.rsa
 	fi
 	if [ !  -s $j.ss2 ] && [ -s $j.trimmed  ]
 	then
@@ -128,4 +124,5 @@ do
   	    fi
 	fi
     fi
+    sleep 10
 done
