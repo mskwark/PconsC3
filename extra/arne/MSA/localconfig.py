@@ -131,6 +131,7 @@ elif os.path.exists("/scratch/arne/"):
 #netsurf = root + 'dependencies/netsurfp-1.0/netsurfp'
 #    netsurf = '/pfs/nobackup/home/a/arnee/Software/PconsC2-extra/netsurfp-1.0/netsurfp'
     netsurf = '/usr/local/bin/netsurfp'
+    netsurf = '/scratch/arne/PconsC2-extra/netsurfp-1.0/netsurfp'
 ### PSIPRED executable ###
 #psipred = root + 'dependencies/psipred/runpsipred'
 #psipred = '/scratch/arne/PconsC2-extra/psipred/runpsipred'
