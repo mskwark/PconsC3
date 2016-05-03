@@ -50,7 +50,7 @@ do
     longtime="120:00:00"
     mem="60GB"
     
-    if [ ! -s $j.trimmed ] && [ ! -s $i.JH0.001.trimmed  ]
+    if [ ! -s $j.trimmed ] && [ ! -s $i.JH0.001.trimmed  ]&& [ ! -s $i.HH0.001.trimmed  ]
     then
 	if [ -s $j.a3m ]
 	then
@@ -61,6 +61,7 @@ do
 
 	else
 	     srun -A snic2015-10-12 --time=$longtime -n 1 -c 6 ~/git/PconsC3/extra/arne/MSA/runjackhmmer.py $i > $j-runjackhmmer.out &
+	     srun -A snic2015-10-12 --time=$longtime -n 1 -c 6 ~/git/PconsC3/extra/arne/MSA/runhhblits.py $i > $j-runhhblits.out &
 	fi
     else
 # #    if [ !  -s $k.out ]
@@ -79,12 +80,12 @@ do
 
 	if [ !  -s $j.rr ] && [ ! -s $m.rr ]
 	then
-#            srun --mem $mem -A snic2015-10-12 --time=$longtime -n 1 -c 6 $HOME/git/PconsC3/extra/arne/MSA/runPhyCMAP.bash $n &> $m-phycmap.out &
+            srun --mem $mem -A snic2015-10-12 --time=$longtime -n 1 -c 6 $HOME/git/PconsC3/extra/arne/MSA/runPhyCMAP.bash $n &> $m-phycmap.out &
   	    echo "srun --mem $mem -A snic2015-10-12 --time=$longtime -n 1 -c 6 $HOME/git/PconsC3/extra/arne/MSA/runPhyCMAP.bash $n &> $m-phycmap.out &"
 	fi
 	if [ !  -s $n.rsa ] && [ ! -s $i.rsa ]
 	then
-#            srun -A snic2015-10-12 --time=$minitime -n 1 -c 6 $HOME/git/PconsC3/extra/arne/MSA/runnetsurfp.py $n &> $j-rsa.out &
+            srun -A snic2015-10-12 --time=$minitime -n 1 -c 6 $HOME/git/PconsC3/extra/arne/MSA/runnetsurfp.py $n &> $j-rsa.out &
             echo "srun -A snic2015-10-12 --time=$minitime -n 1 -c 6 $HOME/git/PconsC3/extra/arne/MSA/runnetsurfp.py $n &> $j-rsa.out &"
  	    #$HOME/git/PconsC3/extra/arne/MSA/runnetsurfp.py $n &> $j-rsa.out 
  	    #ln -s $m.rsa $i.rsa
@@ -96,12 +97,12 @@ do
 	fi
 	if [ !  -s $j.gdca ] && [ -s $j.trimmed  ]
 	then
- #           srun --mem $mem -A snic2015-10-12 --time=$longtime -n 1 -c 6 $HOME/git/PconsC3/rungdca.py $i &> $j-gdca.out &
+            srun --mem $mem -A snic2015-10-12 --time=$longtime -n 1 -c 6 $HOME/git/PconsC3/rungdca.py $i &> $j-gdca.out &
             echo "srun -A snic2015-10-12 --time=$longtime -n 1 -c 6 $HOME/git/PconsC3/rungdca.py $i &> $j-gdca.out &"
 	fi
 	if [ !  -s $j.0.02.plm20 ]
 	then
- #           srun -A snic2015-10-12 --mem $mem --time=$longtime -n 1 -c 6 $HOME/git/PconsC3/runplm.py $i &> $j-plm.out &
+            srun -A snic2015-10-12 --mem $mem --time=$longtime -n 1 -c 6 $HOME/git/PconsC3/runplm.py $i &> $j-plm.out &
             echo "srun -A snic2015-10-12 --time=$longtime -n 1 -c 6 $HOME/git/PconsC3/runplm.py $i &> $j-plm.out &"
 	fi
 	if [ ! -s $j.rr ] && [ -s $m.rr ]
