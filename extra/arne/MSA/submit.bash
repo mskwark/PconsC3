@@ -47,7 +47,7 @@ do
     
     minitime="00:30:00"
     shorttime="04:00:00"
-    longtime="120:00:00"
+    longtime="24:00:00"
     mem="60GB"
     
     if [ ! -s $j.trimmed ] && [ ! -s $i.JH0.001.trimmed  ]&& [ ! -s $i.HH0.001.trimmed  ]
@@ -62,6 +62,8 @@ do
 	else
 	     srun -A snic2015-10-12 --time=$longtime -n 1 -c 6 ~/git/PconsC3/extra/arne/MSA/runjackhmmer.py $i > $j-runjackhmmer.out &
 	     srun -A snic2015-10-12 --time=$longtime -n 1 -c 6 ~/git/PconsC3/extra/arne/MSA/runhhblits.py $i > $j-runhhblits.out &
+	     srun -A snic2015-10-12 --time=$longtime -n 1 -c 6 ~/git/PconsC3/extra/arne/MSA/runjackhmmer.py -e 1  $i > $j-runjackhmmer-e1.out &
+	     srun -A snic2015-10-12 --time=$longtime -n 1 -c 6 ~/git/PconsC3/extra/arne/MSA/runhhblits.py -e 1 $i > $j-runhhblits-e1.out &
 	fi
     else
 # #    if [ !  -s $k.out ]
@@ -74,7 +76,7 @@ do
 	then
 	    minitime="01:00:00"
 	    shorttime="08:00:00"
-	    longtime="120:00:00"
+	    longtime="48:00:00"
 	    mem="120GB"
 	fi
 
@@ -119,7 +121,7 @@ do
   	    if [ -s $j.gdca ]  && [ -s $j.0.02.plm20 ]   && [ -s $j.rr ]  && [ -s $n.rsa ]  && [ -s  $j.ss2 ] && [ -s  $j.gneff ]  && [ -s $j.trimmed ]
   	    then
 		echo " srun -A snic2015-10-12 --time=$longtime -n 1 -c 6 $HOME/git/PconsC3/predict.py $j.gdca $j.0.02.plm20 $j.rr $n.rsa $j.ss2 $j.gneff $j.trimmed $HOME/git/PconsC3/ -1 $j.PconsC3  &> $j-predict.out &"
-		srun -A snic2015-10-12 --mem $mem  --time=$shorttime -n 1 -c 6 $HOME/git/PconsC3/predict-parallel.py $j.gdca $j.0.02.plm20 $j.rr $n.rsa $j.ss2 $j.gneff $j.trimmed $HOME/git/PconsC3/ -1 $j.PconsC3  &> $j-predict.out &
+		srun -A snic2015-10-12 --mem $mem  --time=$minitime -n 1 -c 6 $HOME/git/PconsC3/predict-parallel.py $j.gdca $j.0.02.plm20 $j.rr $n.rsa $j.ss2 $j.gneff $j.trimmed $HOME/git/PconsC3/ -1 $j.PconsC3  &> $j-predict.out &
   	    else 
   		ls -l $j.gdca $j.0.02.plm20 $j.rr $n.rsa $j.ss2 $j.gneff $j.trimmed 
   	    fi
