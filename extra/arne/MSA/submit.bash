@@ -83,7 +83,7 @@ do
 	    minitime="08:00:00"
 	    shorttime="24:00:00"
 	    longtime="48:00:00"
-	    mem="60GB"
+	    mem="120GB"
 	fi
 
 	if [ ! -s $j.rr ] && [ -s $m.rr ]
