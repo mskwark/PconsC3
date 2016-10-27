@@ -16,9 +16,12 @@ if not julia:
 
 print "Using: ",julia
 
-cpus = min(8,multiprocessing.cpu_count())
-
 alignment = sys.argv[1]
+
+if len(sys.argv) > 2:
+    cpus = sys.argv[2]
+else:
+    cpus = min(8,multiprocessing.cpu_count())
 
 if not os.path.exists(alignment):
     sys.stderr.write('Error: Input alignment {:s} does not exist.\n'.format(alignment))

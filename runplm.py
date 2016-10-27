@@ -14,16 +14,20 @@ if not julia:
     sys.exit(0)
 
 
-cpus = multiprocessing.cpu_count()
 
-cpus = 4
-print 'Using {:d} CPUs'.format(cpus)
 
 alignment = sys.argv[1]
 strength = "0.02"
 
 if len(sys.argv) > 2:
     strength = sys.argv[2]
+
+if len(sys.argv) > 3:
+    cpus = sys.argv[3]
+else:
+    cpus = min(8,multiprocessing.cpu_count())
+
+print 'Using {:d} CPUs'.format(cpus)
 
 if not os.path.exists(alignment):
 	sys.exit(0)
