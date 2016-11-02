@@ -23,7 +23,7 @@ if len(sys.argv) > 2:
     strength = sys.argv[2]
 
 if len(sys.argv) > 3:
-    cpus = sys.argv[3]
+    cpus = int(sys.argv[3])
 else:
     cpus = min(8,multiprocessing.cpu_count())
 
