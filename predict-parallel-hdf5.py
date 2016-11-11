@@ -308,9 +308,6 @@ def predict(dir, X_pred):
     if not os.path.exists(dir + '/tree.list'):
         raise IOError('Directory {:s} does not contain proper random forest!\n'.format(dir))
 
-    trees = open(dir + '/tree.list').read().strip().split('\n')
-    random.shuffle(trees)
-    trees = trees[:int(len(trees)*treefraction)]
     predictions = np.zeros(len(X_pred))
     X_pred = np.asarray(X_pred)
 
@@ -319,6 +316,10 @@ def predict(dir, X_pred):
     leafs = []
 
     with h5py.File(dir + '.hdf5', "r") as h5f:
+        trees = h5f.keys()
+        random.shuffle(trees)
+        trees = trees[:int(len(trees)*treefraction)]
+
         for t in trees:
             trunks.append(h5f[t + '/trunks'][()])
             compares.append(h5f[t + '/compares'][()])
