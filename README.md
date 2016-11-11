@@ -105,9 +105,9 @@ And finally compile the Cython script:
 ```
 python setup.py build_ext -i
 ```
-After that you can run the fast version of PconsC3 by:
+After that you can run the fast version of PconsC3:
 ```
-    ./predict-parallel-hdf5.py myprotein.gdca myprotein.0.02.plm20 external.RR netsurf.rsa psipred.ss2 myprotein.stats myprotein.fas outputfile [NumberThreads]
+./predict-parallel-hdf5.py myprotein.gdca myprotein.0.02.plm20 external.RR netsurf.rsa psipred.ss2 myprotein.stats myprotein.fas outputfile [NumberThreads]
 ```
 
 
