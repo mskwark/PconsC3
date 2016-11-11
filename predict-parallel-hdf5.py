@@ -40,8 +40,9 @@ else:
     forestlocation = args.ForestLocations + '/tlayer{:d}-' + str(maxdepth)
 
 for i in xrange(5):
-    if not os.path.exists(forestlocation.format(i) + '/tree.list'.format(i)):
-        sys.stderr.write(forestlocation.format(i) + '/tree.list'.format(i))
+    exists_np = os.path.exists(forestlocation.format(i) + '/tree.list'.format(i))
+    exists_hdf5 = os.path.exists(forestlocation.format(i) + '.hdf5'.format(i)):
+    if not exists_np or exists_hdf5:
         raise IOError('Forest data for layer {:d} is missing.\n'.format(i))
 
 firststart = time.time()
