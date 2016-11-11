@@ -7,6 +7,7 @@ If you use PconsC3 please cite:
 
 # Prerequisites
 
+* h5py and cython if you want to use the parallel version with hdf5 support (**highly recommended** even for non-parallel usage, see **Parallel version** below.)
 * Julia interpreter (ver. 0.3 and up is supported). Present in most Linux repositories (Ubuntu , otherwise download it from [Julia](http://julialang.org/) website.
 * Python interpreter (2.7+)
 * CD-HIT. Available in most Linux distributions, otherwise downloadable from [GitHub](https://github.com/weizhongli/cdhit)
@@ -83,6 +84,33 @@ You can name these files any way you want, but assuming your alignment is named 
     ./predict.py myprotein.gdca myprotein.0.02.plm20 external.RR netsurf.rsa psipred.ss2 myprotein.stats myprotein.fas outputfile
     ```
     This will run for a while, but will provide you with estimates of running time. It will result in a number of intermediate files being generated: `outputfile.l0, outputfile.l1...outputfile.l5` and an `outputfile.RR` containing final predictions in RR format (by default only non-local prediction are output).
+
+# Parallel version and HDF5 support (recommended, even for non-parallel usage)
+
+The parallel version with HDF5 support drastically reduces IO and computation time, while not changing the output in any way. To set it up make sure h5py and Cython are in your PYTHONPATH. You can install the packages via pip:
+```
+pip install h5py
+pip install Cython
+```
+Then you need to convert the forest data in your PconsC3 root directory into HDF5-files:
+```
+cd <PconsC3 root directory>
+python convert_to_hdf5.py .
+```
+After successful conversion you can safely remove the folders containing the forest data:
+```
+find tlayer* ! -name '*.hdf5' -type d -exec rm -r {} +
+```
+And finally compile the Cython script:
+```
+python setup.py build_ext -i
+```
+After that you can run the fast version of PconsC3:
+```
+./predict-parallel-hdf5.py myprotein.gdca myprotein.0.02.plm20 external.RR netsurf.rsa psipred.ss2 myprotein.stats myprotein.fas outputfile [NumberThreads]
+```
+
+
 
 # Making PconsC3 run faster
 
