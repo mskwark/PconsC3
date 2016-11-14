@@ -40,9 +40,7 @@ else:
     forestlocation = args.ForestLocations + '/tlayer{:d}-' + str(maxdepth)
 
 for i in xrange(5):
-    exists_np = os.path.exists(forestlocation.format(i) + '/tree.list'.format(i))
-    exists_hdf5 = os.path.exists(forestlocation.format(i) + '.hdf5'.format(i))
-    if not exists_np or not exists_hdf5:
+    if not os.path.exists(forestlocation.format(i) + '.hdf5'.format(i)):
         raise IOError('Forest data for layer {:d} is missing.\n'.format(i))
 
 firststart = time.time()
@@ -306,7 +304,7 @@ sys.stderr.flush()
 
 
 def predict(dir, X_pred):
-    if not os.path.exists(dir + '/tree.list'):
+    if not os.path.exists(dir + '.hdf5'):
         raise IOError('Directory {:s} does not contain proper random forest!\n'.format(dir))
 
     predictions = np.zeros(len(X_pred))
