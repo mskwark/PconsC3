@@ -1,8 +1,13 @@
 #!/bin/bash -x
 
 
-if [ -a "/pfs/nobackup/home/a/arnee/Software/PconsC2-extra/PhyCmap/phycmap.release/" ]
+
+
+if [ -a "/pfs/nobackup/home/m/mircomic/phycmap.release/" ]
 then
+    export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:/pfs/nobackup/home/m/mircomic/gsl-1.16/build/lib
+    export R_LIBS="/pfs/nobackup/home/m/mircomic/R_libs"
+    export PATH=$PATH:/pfs/nobackup/home/m/mircomic/replace-bin
     install_dir="/pfs/nobackup/home/a/arnee/Software/PconsC2-extra/PhyCmap/phycmap.release/"
     echo "We are at HPC2N"
 elif [ -a "/proj/bioinfo/software/PconsC2-extra/PhyCmap/phycmap.release/" ]
