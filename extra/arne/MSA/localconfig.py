@@ -88,7 +88,8 @@ elif os.path.exists("/pfs/nobackup/home/"):
 
 ### NetSurfP executable ###
 #netsurf = root + 'dependencies/netsurfp-1.0/netsurfp'
-    netsurf = '/pfs/nobackup/home/a/arnee/Software/PconsC2-extra/netsurfp-1.0/netsurfp'
+    netsurf = '/pfs/nobackup/home/m/mircomic/netsurfp-1.0c/netsurfp'
+    # '/pfs/nobackup/home/a/arnee/Software/PconsC2-extra/netsurfp-1.0/netsurfp'
 
 ### PSIPRED executable ###
 #psipred = root + 'dependencies/psipred/runpsipred'
