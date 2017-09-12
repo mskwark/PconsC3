@@ -12,8 +12,9 @@
 snic=snic2016-10-22
 
 
+export TMPDIR=$SNIC_TMP
 #cores="-n 1 -c 6"
-cores=" -c 6 "
+#cores=" -c 6 "
 
 for i in "$@"
 do
@@ -44,7 +45,7 @@ do
 		then
 		    echo "Using $n"
 		else
-		    echo "ERROR: Not found FASTa file $i $m $n"
+		    echo "ERROR: Not found FASTA file $i $m $n"
 #		    exit 0
 		fi
 	    fi
