@@ -3,7 +3,7 @@
 import sys, os, argparse
 
 
-parser = argparse.ArgumentParser(description="Trimming extra charcters in aligned sequence sfrom an a3m file")
+parser = argparse.ArgumentParser(description="Trimming extra charcters in aligned sequence from an a3m file")
 parser.add_argument('-o','--orgname', help='Keep original filenames', action="store_true")
 #parser.add_argument('file', metavar='file', type=argparse.FileType('r'), nargs=1, help='filename')
 parser.add_argument('file', metavar='file', type=str, nargs=1, help='filename')
