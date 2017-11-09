@@ -3,21 +3,20 @@
 import sys, os, argparse
 
 
-parser = argparse.ArgumentParser(description="Trimming extra charcters in aligned sequence from an a3m file")
+parser = argparse.ArgumentParser(description="Trimming extra characters in aligned sequence from an a3m file")
 parser.add_argument('-o','--orgname', help='Keep original filenames', action="store_true")
 #parser.add_argument('file', metavar='file', type=argparse.FileType('r'), nargs=1, help='filename')
 parser.add_argument('file', metavar='file', type=str, nargs=1, help='filename')
 args = parser.parse_args()
 
-print args
+#print args
 
 #if args.orgname:
 #        print "verbosity turned on"
 
 for infilef in args.file:
-    print infilef
+#    print infilef
     infile = open(infilef)
-
 
 
 
