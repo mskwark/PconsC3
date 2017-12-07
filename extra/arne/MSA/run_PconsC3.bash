@@ -57,7 +57,7 @@ while [ "$1" != "" ]; do
     shift
 done
 
-seqbase=`basename $seqfile|sed -e s/\.seq$// |sed -e s/\.fa$// |sed -e s/\.fasta$//|sed -e s/\.trimmed$//   `;
+seqbase=`basename $seqfile|sed -e s/\.seq$// |sed -e s/\.fa$// |sed -e s/\.fa$// |sed -e s/\.fasta$//|sed -e s/\.trimmed$//   `;
 seqname=`basename  $seqfile`
 #rootname=`echo $seqname | sed -E "s/\.fa.*//"`
 rootname=$seqbase
