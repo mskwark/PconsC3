@@ -6,6 +6,7 @@ import sys, os, argparse
 parser = argparse.ArgumentParser(description="Trimming extra characters in aligned sequence from an a3m file")
 parser.add_argument('-o','--orgname', help='Keep original filenames', action="store_true")
 #parser.add_argument('file', metavar='file', type=argparse.FileType('r'), nargs=1, help='filename')
+parser.add_argument('-name', type=str, help='name')
 parser.add_argument('file', metavar='file', type=str, nargs=1, help='filename')
 args = parser.parse_args()
 
@@ -35,7 +36,9 @@ for l in infile:
         upperseq = upperseq.replace('X', '-')
         sys.stdout.write(upperseq)
     elif '>' in l and counter == 0:
-        if args.orgname:
+        if args.name:
+            sys.stdout.write(">"+args.name+"\n")
+        elif args.orgname:
             sys.stdout.write(l)
         else:
             sys.stdout.write('>target/1-100\n')
