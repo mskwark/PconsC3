@@ -1,20 +1,21 @@
 #!/bin/bash -x
-#SBATCH -A snic2015-10-12 
+#SBATCH -A SNIC2017-11-7
 # We actually start 6 jobs in parallel.
 # Probably more efficient than running with 5 thread.
-#SBATCH -n 6 
-#SBATCH -c 1 
+#SBATCH -n 1 
+#SBATCH -c 6 
 #SBATCH --time=04:00:00 
 #SBATCH -J RunJackhmmer 
 #SBATCH --output=out/PconsC3.%J.out
 #SBATCH --error=err/PconsC3.%J.err 
 
-snic=snic2016-10-22
+snic=SNIC2017-11-7
 
 
 export TMPDIR=$SNIC_TMP
 #cores="-n 1 -c 6"
 #cores=" -c 6 "
+
 
 for i in "$@"
 do
@@ -22,7 +23,7 @@ do
     then
 	i=$i.JH0.001.trimmed
     fi
-    j=`basename $i .trimmed`
+   j=`basename $i .trimmed`
     m=`echo $j | sed "s/\.fasta.*//" | sed "s/\.seq.*//"  | sed "s/\.fa.*//"`
     n=$m.fasta
     if  [ -s $n ]
