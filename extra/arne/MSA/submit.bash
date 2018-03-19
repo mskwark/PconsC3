@@ -23,7 +23,7 @@ do
     then
 	i=$i.JH0.001.trimmed
     fi
-   j=`basename $i .trimmed`
+    j=`basename $i .trimmed`
     m=`echo $j | sed "s/\.fasta.*//" | sed "s/\.seq.*//"  | sed "s/\.fa.*//"`
     n=$m.fasta
     if  [ -s $n ]
