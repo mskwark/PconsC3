@@ -92,10 +92,10 @@ do
 	    mem="120GB"
 	fi
 
-	if [ ! -s $j.rr ] && [ -s $m.rr ]
-	then
-	    ln -s $m.rr $j.rr 
-	fi
+#	if [ ! -s $j.rr ] && [ -s $m.rr ]#
+#	then
+#	    # ln -s $m.rr $j.rr #
+#	fi
 	if [ ! -s $j.fa.rsa ] && [ -s $m.rsa ]
 	then
 	    ln -s $m.rsa $j.fa.rsa 
