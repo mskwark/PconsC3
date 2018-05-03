@@ -35,9 +35,18 @@ if ( -d "/proj/bioinfo/software/PconsC2-extra/hhsuite-2.0.16-linux-x86_64/script
 }elsif ( -d "/pfs/nobackup/home/a/arnee/Software/PconsC2-extra/hhsuite-2.0.16/scripts/"){
     print "\nINFO: We are at HPC2n\n";
     use lib "/pfs/nobackup/home/a/arnee/Software/PconsC2-extra/hhsuite-2.0.16/scripts/";
+}elsif ( -d "/home/arnee/git/hh-suite/scripts/"){
+    print "\nINFO: We are at Local machine GITn\n";
+    use lib "/home/arnee/git/hh-suite/scripts/";
 }else{
-    print "INFO: We are uting HHLIB\n";
-    use lib $ENV{"HHLIB"}."/scripts";
+    print "INFO: We are using HHLIB\n";
+    if ( -d $ENV{"HHLIB"}."/scripts" ){
+	use lib $ENV{"HHLIB"}."/scripts";
+    }else{
+	if ( -d  "/usr/share/hhsuite/scripts/" ){
+	    use lib " /usr/share/hhsuite/scripts/";
+	}
+    }
 }
 
 #use lib "/proj/bioinfo/software/PconsC2-extra/hhsuite-2.0.16/scripts";
@@ -56,6 +65,11 @@ if ( -d "/proj/bioinfo/software/PconsC2-extra/"){
     $execdir="/pfs/nobackup/home/a/arnee/Software/PconsC2-extra/psipred/bin/";
     $datadir="/pfs/nobackup/home/a/arnee/Software/PconsC2-extra/psipred/data/";
     $ncbidir="/pfs/nobackup/home/a/arnee/Software/PconsC2-extra/blast-2.2.16/bin/";
+}elsif ( -d "/home/arnee/git/highres-proq2/" )
+{
+    $execdir="/home/arnee/git/boctopus/boctopus2/psipred_bin/psipred25/bin/";
+    $datadir="/home/arnee/git/boctopus/boctopus2/psipred_bin/psipred25/data/";
+    $ncbidir="/home/arnee/git/TOPCONS2/topcons2_webserver/tools/blast-2.2.26/bin";
 }
 
 # Module needed for aligning DSSP-sequence
