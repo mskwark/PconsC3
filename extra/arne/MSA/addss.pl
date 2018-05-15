@@ -32,12 +32,21 @@
 if ( -d "/proj/bioinfo/software/PconsC2-extra/hhsuite-2.0.16-linux-x86_64/scripts/"){
     print "\nINFO: We are at NSC\n";
     use lib "/proj//bioinfo/software/PconsC2-extra/hhsuite-2.0.16-linux-x86_64/scripts/";
+}elsif ( -d "/home/arnee/git/hh-suite/scripts/"){
+    print "\nINFO: We are at Local machine GITn\n";
+    use lib "/home/arnee/git/hh-suite/scripts/";
 }elsif ( -d "/pfs/nobackup/home/a/arnee/Software/PconsC2-extra/hhsuite-2.0.16/scripts/"){
     print "\nINFO: We are at HPC2n\n";
     use lib "/pfs/nobackup/home/a/arnee/Software/PconsC2-extra/hhsuite-2.0.16/scripts/";
 }else{
-    print "INFO: We are uting HHLIB\n";
-    use lib $ENV{"HHLIB"}."/scripts";
+    print "INFO: We are using HHLIB\n";
+    if ( -d $ENV{"HHLIB"}."/scripts" ){
+	use lib $ENV{"HHLIB"}."/scripts";
+    }else{
+	if ( -d  "/usr/share/hhsuite/scripts/" ){
+	    use lib " /usr/share/hhsuite/scripts/";
+	}
+    }
 }
 
 #use lib "/proj/bioinfo/software/PconsC2-extra/hhsuite-2.0.16/scripts";
@@ -52,6 +61,11 @@ my $ss_cit="PSIPRED: Jones DT. (1999) Protein secondary structure prediction bas
 if ( -d "/proj/bioinfo/software/PconsC2-extra/"){
     $execdir="/proj/bioinfo/software/PconsC2-extra/psipred/bin/";
     $datadir="/proj/bioinfo/software/PconsC2-extra/psipred/data/";
+}elsif ( -d "/home/arnee/git/highres-proq2/" )
+{
+    $execdir="/scratch2/arne/git/highres-proq2/ProQ3/apps/psipred25/bin/";
+    $datadir="/scratch2/arne/git/highres-proq2/ProQ3/apps/psipred25/data/";
+    $ncbidir="/home/arnee/git/TOPCONS2/topcons2_webserver/tools/blast-2.2.26/bin";
 }elsif( -d "/pfs/nobackup/home/a/arnee/Software/PconsC2-extra/"){
     $execdir="/pfs/nobackup/home/a/arnee/Software/PconsC2-extra/psipred/bin/";
     $datadir="/pfs/nobackup/home/a/arnee/Software/PconsC2-extra/psipred/data/";
@@ -163,6 +177,8 @@ my ($tmpf, $tmpfile) = tempfile( DIR => $tmpdir );
 my $tmpfile_no_dir;
 if ($tmpfile=~/.*\/(.*)/)  {$tmpfile_no_dir=$1;} else {$tmpfile_no_dir=$tmpfile;} # remove path 
 
+&HHPaths::System("mkdir -p $tmpdir");
+
 ############################################################################################
 
 if ($informat ne "hmm") {
@@ -172,7 +188,7 @@ if ($informat ne "hmm") {
     if ($informat ne "a3m") {
 	&HHPaths::System("$hhscripts/reformat.pl -v $v2 -M first $informat a3m $infile $tmpfile.in.a3m");
     } else {
-	&HHPaths::System("cp $infile $tmpfile.in.a3m");
+	&HHPaths::System("rsync -a $infile $tmpfile.in.a3m");
     }
     
     # Read query sequence
@@ -445,7 +461,7 @@ sub RunPsipred() {
     if (!-e "$dummydb.phr") {
 	if (!-e "$dummydb") {die "Error in addss.pl: Could not find $dummydb\n";}
 
-	&HHPaths::System("cp $infile $dummydb");
+	&HHPaths::System("rsync -a $infile $dummydb");
 	&HHPaths::System("$ncbidir/formatdb -i $dummydb");
 	if (!-e "$dummydb.phr") {die "Error in addss.pl: Could not find nor create index files for $dummydb\n";}
     }
@@ -549,7 +565,7 @@ sub AppendDsspSequences() {
 	if ($pdbfile eq "") {return;}
 
 	system("$dssp $pdbfile $tmpfile.dssp 2> /dev/null");
-	system("cp $tmpfile.dssp $dsspfile 2> /dev/null");
+	system("rsync -a $tmpfile.dssp $dsspfile 2> /dev/null");
 	$dsspfile="$tmpfile.dssp";
 	if (! open (DSSPFILE, "<$dsspfile")) {
 	    if ($v>=3) {printf(STDERR "Warning in $program: dssp couldn't generate file from $pdbfile. Skipping $name\n");}
